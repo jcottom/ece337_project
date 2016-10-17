@@ -69,7 +69,7 @@ def scaleData(data):
 
     return out
 
-def trainNet(data,):
+def trainNet(data, numEpochs):
     pass
 
 def main():
