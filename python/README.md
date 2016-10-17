@@ -7,4 +7,6 @@
 
 ## Notes:
 
+ann.py uses Python 3
+
 To use ann.py, it is necessary to download the MNIST dataset from the above link, unzip it, and put it in the same directory as ann.py.
