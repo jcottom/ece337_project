@@ -1,214 +1,146 @@
-import math
+"""
+100 epochs, [64 32 16 10], batch size 600 takes ~38 minutes on my desktop
+30 epochs, [64 100 10], batch size 10 takes ~27 minutes
+"""
+import random
 import numpy as np
-from matplotlib import pyplot as plt
+
+from format_data import *
+
+class Network:
+    def __init__(self, sizes):
+        """sizes is a list of the number of neurons in each layer in the
+        network."""
+
+        self.sizes = sizes
+        self.numLayers = len(sizes)
+        self.biases = [np.random.randn(y,1) for y in sizes[1:]]
+        self.weights = [np.random.randn(y,x) for x, y in zip(sizes[:-1], sizes[1:])]
 
 
-# Gets image data from filename
-def getImageData():
-    with open("train-images-idx3-ubyte", 'rb') as fp:
-        magicNum = fp.read(4)
-        numSamples = int.from_bytes(fp.read(4), byteorder="big")
-        numRows = int.from_bytes(fp.read(4), byteorder="big")
-        numCols = int.from_bytes(fp.read(4), byteorder="big")
+    def feedForward(self, a):
+        """For input a, return output of network."""
 
-        data = np.zeros((numSamples, numRows, numCols), dtype=np.uint8)
+        for b, w in zip(self.biases, self.weights):
+            a = relu(np.dot(w,a) + b)
+        return a
 
-        for inds in range(0, numSamples):
-            for indr in range(0, numRows):
-                for indc in range(0, numCols):
-                    data[inds, indr, indc] = int.from_bytes(fp.read(1), byteorder="big")
+    def SGD(self, trainingData, epochs, batchSize, eta):
+        """Performs batch stochastic gradient descent."""
 
-    return scaleData(data)
+        n = len(trainingData)
+        for epoch in range(epochs):
+            random.shuffle(trainingData)
+            batches = [trainingData[k:k + batchSize] for k in range(0, n, batchSize)]
+            for batch in batches:
+                self.updateBatch(batch, eta)
+            print("Epoch " + str(epoch) + " complete")
 
-def showImage(data, num):
-    numSamples = np.shape(data)[0]
-    picData = data.reshape(numSamples, 8, 8, 2)
+    def updateBatch(self, batch, eta):
+        """Updates network's biases and weights by applying gradient descent
+        using backpropogation to a batch of inputs.  batch is a list of tuples
+        (x,y)."""
 
-    print(picData[num, :,:, 0])
+        batchSize = len(batch)
 
-    plt.imshow(picData[num,:,:,0], interpolation="nearest")
-    plt.show()
-    print("Label: " + str(picData[num,0,0,1]))
+        nabla_b = [np.zeros(b.shape) for b in self.biases]
+        nabla_w = [np.zeros(w.shape) for w in self.weights]
+
+        for x, y in batch:
+            delta_nabla_b, delta_nabla_w = self.backprop(x, y)
+            nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
+            nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
+
+        # Update weights and biases
+        self.weights = [w-(eta/batchSize)*nw for w, nw in zip(self.weights, nabla_w)]
+        self.biases = [b-(eta/batchSize)*nb for b, nb in zip(self.biases, nabla_b)]
+
+    def backprop(self, x, y):
+        """Return a tuple (nabla_b, nabla_w) representing the gradient of the
+        cost function."""
+
+        # Ensure orientation of vectors x and y
+        x = x.reshape(len(x), 1)
+        y = y.reshape(len(y), 1)
+
+        nabla_b = [np.zeros(b.shape) for b in self.biases]
+        nabla_w = [np.zeros(w.shape) for w in self.weights]
+
+        # Forward pass
+        activation = x
+        activations = [x]
+
+        zs = []
+
+        for b,w in zip(self.biases, self.weights):
+            z = np.dot(w, activation) + b
+            zs.append(z)
+            activation = relu(z)
+            activations.append(activation)
+
+        # Backward pass
+        delta = self.costDerivative(activations[-1], y) * reluPrime(zs[-1])
+        nabla_b[-1] = delta
+        nabla_w[-1] = np.dot(delta, activations[-2].T)
+
+        # Work backwards from end of network, apply chain rule
+        for l in range(2, self.numLayers):
+            z = zs[-l]
+            delta = np.dot(self.weights[-l+1].T, delta) * reluPrime(z)
+            nabla_b[-l] = delta
+            nabla_w[-l] = np.dot(delta, activations[-l-1].T)
+
+        # Reverse lists:
+        #nabla_b = nabla_b[::-1]
+        #nabla_w = nabla_w[::-1]
+        return (nabla_b, nabla_w)
 
 
-def getLabelData():
-    with open("train-labels-idx1-ubyte", 'rb') as fp:
-        magicNum = fp.read(4)
-        numSamples = int.from_bytes(fp.read(4), byteorder="big")
+    def evaluate(self, testData):
+        pass
 
-        data = np.zeros((numSamples), dtype=np.uint8)
+    def costDerivative(self, outputActivations, y):
+        return outputActivations - y
 
-        for ind in range(0, numSamples):
-            data[ind] = int.from_bytes(fp.read(1), byteorder="big")
+### Other functions
 
-    return data
+def reluFloat(z):
+    return max(0,z)
 
-def combineData(images, labels):
+relu = np.frompyfunc(reluFloat, 1, 1)
 
-    numSamples = np.shape(images)[0]
-
-    # shape = numSamples x 64 x 2
-    data = np.zeros((numSamples, 8 * 8, 2), dtype=np.uint8)
-
-    data[:,:,0] = images
-    data[:,0,1] = labels
-    return data
-
-
-# Resizes each image in dataset to 8x8 using nearest neighbors scaling
-def scaleData(data):
-
-    # Get dimensions of data
-    (numSamples, numRows, numCols) = np.shape(data)
-
-    # Images are flattened into vectors of lenth 8x8 = 64
-    out = np.zeros((numSamples, 8 * 8), dtype=np.uint8)
-
-    # Calculate scaling factor
-    scale = (8/numRows, 8/numCols)
-
-    for x in range(0, 8):
-        for y in range(0, 8):
-            out[:,x*8 + y] = data[:,round(x/scale[0]), round(y/scale[1])]
-
-    return out
-
-def getTrainData():
-    images = getImageData()
-    labels = getLabelData()
-
-    data = combineData(images, labels)
-
-    return data
-
-# Rectified linear activation function
-def reluFloat(x):
-    return max(x, 0)
-
-def reluFLoatPrime(x):
-    if x >= 0:
+def reluPrimeFloat(z):
+    if z > 0:
         return 1
     return 0
 
+reluPrime = np.frompyfunc(reluPrimeFloat, 1, 1)
 
-def forward(inputs, weights):
+def test(data):
+    # Architecture:
+    # input layer: 64
+    # layer 0: 32
+    # layer 1: 16
+    # layer 2: 10
+    #sizes = [64, 32, 16, 10]
+    sizes = [64, 100, 10]
+    ANN = Network(sizes)
 
-    relu = np.frompyfunc(reluFloat, 1, 1)
-    reluPrime = np.frompyfunc(reluFLoatPrime, 1, 1)
-
-    w0 = weights[0]
-    w1 = weights[1]
-    w2 = weights[2]
-
-    z0 = np.dot(inputs, w0)
-    out0 = relu(z0)
-    z1 = np.dot(out0, w1)
-    out1 = relu(z1)
-    z2 = np.dot(out1, w2)
-    out2 = relu(z2)
-    out = out2;
-    return out
-
-def backward(inputs, outputs, weights, labels):
-    pass
-
-def trainNet(data, batchSize, numEpochs):
-
-    # ANN Hyperparameters
-    # 3 layers:
-    #  first: fully connected, 32 nodes
-    #  second: fully connected 16 nodes
-    #  output: fully connected 10 nodes
-    numNodes0 = 32
-    numNodes1 = 16
-    numNodes2 = 10
-
-    # Initialize synapse weights for three layers
-    w0 = 2*np.random.random((64,numNodes0)) - 1
-    w1 = 2*np.random.random((numNodes0,numNodes1)) - 1
-    w2 = 2*np.random.random((numNodes1,numNodes2)) - 1
-
-    # Number of batches
-    numSamples = np.shape(data)[0]
-    numBatches = int(numSamples/batchSize)
-
-    # Get numpy ufunc
-    relu = np.frompyfunc(reluFloat, 1, 1)
-    reluPrime = np.frompyfunc(reluFLoatPrime, 1, 1)
-
-    for epoch in range(numEpochs):
-        for batchNum in range(numBatches):
-            # Shuffle data
-            np.random.shuffle(data)
-
-            # Get batch (first batchSize samples from data)
-            batch = data[0:batchSize,:,:]
-
-            # Format label
-            labels = np.zeros((batchSize, numNodes2))
-            for ind in range(batchSize):
-                labels[ind,batch[ind,0,1]] = 1
-
-            # Format inputs
-            inputs = batch[:,:,0].reshape(batchSize,64)
-
-            # Forward pass
-            # Annoyingly, np.dot is how numpy multiplies arrays as matrices
-            z0 = np.dot(inputs, w0)
-            out0 = relu(z0)
-            z1 = np.dot(out0, w1)
-            out1 = relu(z1)
-            z2 = np.dot(out1, w2)
-            out2 = relu(z2)
-            out = out2;
-
-            # Compute error
-            errors = labels - out
-            error = np.mean(errors, axis=0)
-
-            # Backward pass
-            delta2 = -error * reluPrime(z2)
-            dJdW2 = np.dot(out1.T, delta2)
-            delta1 = np.dot(delta2, w2.T) * reluPrime(z1)
-            dJdW1 = np.dot(out0.T, delta1)
-            delta0 = np.dot(delta1, w1.T) * reluPrime(z0)
-            dJdW0 = np.dot(inputs.T, delta0)
-
-            learningRate = 1;
-
-            w0 -= learningRate*dJdW0;
-            w1 -= learningRate*dJdW1;
-            w2 -= learningRate*dJdW2;
-
-        print("End of epoch " + str(epoch + 1) + "/" + str(numEpochs))
-
-    costFunc = np.frompyfunc(lambda x: 0.5*x**2, 1, 1)
-    cost = np.sum(costFunc(error))
-
-    print("Cost is  " + str(cost))
-
-    return w0, w1, w2
-
-def numericalGradient(weights, inputs, outputs):
-    e = 1e-4
-    pass
-
-def main():
-    # This takes awhile (it loads over 45MB of data)
-    trainData = getTrainData()
-    print("Training data loaded.")
-
-    numSamples = np.shape(testData)[0]
-
-    # Chosen for convenience
-    numEpochs = 1
+    numEpochs = 30
     batchSize = 10
+    learningRate = 3.0
 
-    # Train network
-    weights = trainNet(trainData, batchSize, numEpochs)
-    print("Network has been trained.")
+    x = [x.reshape(len(x), 1) for x,y in data]
+    y = [y.reshape(len(y), 1) for x,y in data]
+
+    yhat = ANN.feedForward(x[0])
+
+    print(y[0] - yhat)
+    timeFunc(ANN.SGD, data, numEpochs, batchSize, learningRate)
+
+    yhat = ANN.feedForward(x[0])
+    print(y[0] - yhat)
 
 
 
-if __name__ == "__main__":
-    main()
+    return ANN
