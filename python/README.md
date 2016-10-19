@@ -13,6 +13,6 @@ To use ann.py, it is necessary to download the MNIST dataset from the above link
 
 ## Theory:
 
-\begin{equation}
+\\begin{equation}
 2+2 = 4
-\end{equation}
+\\end{equation}
