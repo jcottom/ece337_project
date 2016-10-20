@@ -18,7 +18,7 @@
  |      1 | 0 01111 0000000000  |
  |      2 | 0 10000 0000000000  |
  |    128 | 0 10110 0000000000  |
- |    255 | 0 10110 1111110000  |
+ |    255 | 0 10110 1111111000  |
  |  65504 | 0 11110 1111111111  |
 
  */
@@ -36,28 +36,28 @@ module uint8_to_half (
    // exponent to 15 + binary place of MS1, and setting the most significant
    // bits of the significand to the bits following the MS1
    always_comb begin
-      if(in & 8'd128 == 8'd128) begin
+      if(in[7]) begin
          exponent = 15 + 7;
          significand = {in[6:0], 3'd0};
-      end else if(in & 8'd64 == 8'd64) begin
+      end else if(in[6]) begin
          exponent = 15 + 6;
          significand = {in[5:0], 4'd0};
-      end else if(in & 8'd32 == 8'd32) begin
+      end else if(in[5]) begin
          exponent = 15 + 5;
          significand = {in[4:0], 5'd0};
-      end else if(in & 8'd16 == 8'd16) begin
+      end else if(in[4]) begin
          exponent = 15 + 4;
          significand = {in[3:0], 6'd0};
-      end else if(in & 8'd8 == 8'd8) begin
+      end else if(in[3]) begin
          exponent = 15 + 3;
          significand = {in[2:0], 7'd0};
-      end else if(in & 8'd4 == 8'd4) begin
+      end else if(in[2]) begin
          exponent = 15 + 2;
          significand = {in[1:0], 8'd0};
-      end else if(in & 8'd2 == 8'd2) begin
+      end else if(in[1]) begin
          exponent = 15 + 1;
          significand = {in[0], 9'd0};
-      end else if(in & 8'd1 == 8'd1) begin
+      end else if(in[0]) begin
          exponent = 15;
          significand = 0;
       end else begin
