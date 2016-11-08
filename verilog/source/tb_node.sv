@@ -35,6 +35,11 @@ module tb_node();
 	
 		
 	initial
+		// Initialize variables
+		
+		//Test loaded matrix
+		
+		//Check expected output
 	begin
 
 	end
