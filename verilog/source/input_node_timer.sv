@@ -1,3 +1,12 @@
+// $Id: $
+// File name:   input_node_timer.sv
+// Created:     11/8/2016
+// Author:      Ryan McBee
+// Lab Section: 337-03
+// Version:     1.0  Initial Design Entry
+// Description: input node timer
+
+
 module input_node_timer
 (
 	input wire clk,

@@ -1,5 +1,10 @@
-// 337 TA Provided Lab 2 Testbench
-// This code serves as a test bench for the 1 bit adder design 
+// $Id: $
+// File name:   tb_input_node_timer.sv
+// Created:     11/8/2016
+// Author:      Ryan McBee
+// Lab Section: 337-03
+// Version:     1.0  Initial Design Entry
+// Description: input node timer test bench
 
 `timescale 1ns / 100ps
 

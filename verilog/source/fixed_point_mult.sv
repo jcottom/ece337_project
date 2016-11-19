@@ -1,3 +1,11 @@
+// $Id: $
+// File name:   fixed_point_mult.sv
+// Created:     11/8/2016
+// Author:      Ryan McBee
+// Lab Section: 337-03
+// Version:     1.0  Initial Design Entry
+// Description: fixed point multiplication
+
 module fixed_point_mult
 (
 	input wire [15:0] a,

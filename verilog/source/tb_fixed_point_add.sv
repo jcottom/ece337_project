@@ -1,5 +1,10 @@
-// 337 TA Provided Lab 2 Testbench
-// This code serves as a test bench for the 1 bit adder design 
+// $Id: $
+// File name:   fixed_point_mult.sv
+// Created:     11/8/2016
+// Author:      Ryan McBee
+// Lab Section: 337-03
+// Version:     1.0  Initial Design Entry
+// Description: tb_fixed point addition test bench
 
 `timescale 1ns / 100ps
 
