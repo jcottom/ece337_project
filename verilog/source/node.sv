@@ -42,13 +42,13 @@ begin
 		acculator = 0;
 	end  
 	else begin
-		accumulator = accumulator + nxt_add;
+		fixed_point_add(.a(accumulator), .b(nxt_add), .result(accumulator)); //accumulator = accumulator + nxt_add
 	end
 end
 
 always_comb begin
-	nxt_add = coef[cnt_val] * data_in[cnt_val];
-	//node_out = activation_fucntion(accumuulator);
+	fixed_point_mult(.a(coef[cnt_val]), .b(data_in[cnt_val]), .result(nxt_add)); //nxt_add = coef[cnt_val] * data_in[cnt_val];
+	node_out = activation_function(accumuulator);
 end
 
 
