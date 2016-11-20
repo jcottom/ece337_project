@@ -20,6 +20,9 @@ module tb_input_node_timer
 	reg tb_start_sram;
 	reg tb_read_nxt_byte;
 	reg tb_sram_done;
+
+	sram_timer(clk(tb_clk),.n_rst(tb_n_rst),.coef_select(tb_coef_select),.n_coef_image(tb_n_coef_image),.start_sram(tb_start_sram),.read_nxt_byte(tb_read_nxt_byte),.sram_done(tb_sram_done));
+	
 	
 	// Clock gen block
 	always
