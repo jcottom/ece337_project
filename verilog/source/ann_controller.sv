@@ -6,6 +6,11 @@
 // Version:     1.0  Initial Design Entry
 // Description: ANN Controller
 
+
+//TO DO
+	//make max input variable and change over timer; create a table to store max input variables
+
+
 module ann_controller
 (
 	input wire clk,
