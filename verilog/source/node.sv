@@ -47,8 +47,8 @@ begin
 end
 
 always_comb begin
-	nxt_add = coef[cnt_val] * in_val[cnt_val];
-	node_out = activation_fucntion(accumuulator);
+	nxt_add = coef[cnt_val] * data_in[cnt_val];
+	//node_out = activation_fucntion(accumuulator);
 end
 
 
