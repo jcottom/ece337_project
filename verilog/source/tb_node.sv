@@ -1,48 +1,38 @@
 // $Id: $
 // File name:   tb_node.sv
-// Created:     11/1/2016
-// Author:      Ryan McBee
-// Lab Section: 7
+// Created:     11/21/2016
+// Author:      Cheyenne Martinez
+// Lab Section: 337-03
 // Version:     1.0  Initial Design Entry
-// Description: test bench for the node block
+// Description: Test bench for node
 
-`timescale 1ns/10ps
+`timescale 1ns / 100ps
 
-module tb_node();
+
+module tb_node ();
+
+	localparam PERIOD = 10.0ns
 
 	reg tb_clk;
 	reg tb_n_rst;
-	reg [6:0] tb_cnt_val;
-	reg [15:0] tb_coef [63:0];
-	reg [15:0] tb_in_val [63:0];
+	reg tb_start;
+	reg tb_reset_acc;
+	reg [6:0] tb_cnt_val [63:0];
+	reg [15:0] tb_data_in [63:0];
 	reg [2:0] tb_node_out;
 
-	
-	
-	localparam CLK_PERIOD = 10ns;
+	node DUT(.clk(tb_clk), .n_rst(tb_n_rst), .start(tb_start), .reset_acc(tb_reset_acc), .cnt_val(tb_cnt_val), .coef(tb_coef), .data_in(tb_data_in), .node_out(tb_node_out));
 
-	// Clock gen block
-	always
-	begin : CLK_GEN
+	always begin
 		tb_clk = 1'b0;
-		#(CLK_PERIOD / 2.0);
+		#(PERIOD / 2)
 		tb_clk = 1'b1;
-		#(CLK_PERIOD / 2.0);
+		#(PERIOD / 2)
+	end 
+
+	initial begin
+		
+		
 	end
-
-	node DUT(.clk(tb_clk), .n_rst(tb_n_rst), .cnt_val(tb_cnt_val), .coef(tb_cnt), .in_val(tb_in_val), .node_out(tb_node_out));
-	
-	
-		
-	initial
-		// Initialize variables
-		
-		//Test loaded matrix
-		
-		//Check expected output
-	begin
-
-	end
-
 
 endmodule
