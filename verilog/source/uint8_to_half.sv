@@ -8,12 +8,14 @@
  The number represented depends on the values of the exponent and the significand:
 
  |        exponent | significand = 0  | significand > 0   | number                                         |
+ |-----------------+------------------+-------------------+------------------------------------------------|
  |           00000 | +0,-0            | subnormal numbers | -1^sign * 2^-14 * 0.significand_(2)            |
  | 00001,...,11110 | normalized value | <==               | -1^sign * 2^(exponent - 15) * 1.signficand_(2) |
  |           11111 | +-infinity       | NaN               |                                                |
 
  Some examples:
  | number | half representation |
+ |--------+---------------------|
  |      0 | 0 00000 0000000000  |
  |      1 | 0 01111 0000000000  |
  |      2 | 0 10000 0000000000  |
