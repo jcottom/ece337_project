@@ -24,7 +24,7 @@ def getImageData(filename):
                     image[indr, indc] = int.from_bytes(fp.read(1), byteorder="big")
             data.append(image)
 
-    return scaleData(data)
+    return data
 
 def scaleData(data):
     """Resizes each image in dataset to 8x8 using nearest neighbors scaling.
@@ -35,14 +35,14 @@ def scaleData(data):
     (numRows, numCols) = np.shape(data[0])
 
     # Images are flattened into vectors of lenth 8x8 = 64
-    image = np.zeros(( 8 * 8), dtype=np.uint8)
+    #image = np.zeros(( 8 * 8), dtype=np.uint8)
 
     # Calculate scaling factor
     scale = (8/numRows, 8/numCols)
 
     out = list()
     for datum in data:
-        image = np.zeros(( 8 * 8), dtype=np.uint8)
+        image = np.zeros(( 8 * 8, 1), dtype=np.uint8)
         for x in range(0, 8):
             for y in range(0, 8):
                 image[x*8 + y] = datum[round(x/scale[0]), round(y/scale[1])]
@@ -67,7 +67,7 @@ def getLabelData(filename):
 
     y = list()
     for datum in data:
-        label = np.zeros(10)
+        label = np.zeros((10,1))
         label[datum] = 1
         y.append(label)
 
@@ -84,7 +84,7 @@ def combineData(images, labels):
 def getTrainData():
     imageFile = "train-images-idx3-ubyte"
     labelFile = "train-labels-idx1-ubyte"
-    images = getImageData(imageFile)
+    images = scaleData(getImageData(imageFile))
     labels = getLabelData(labelFile)
 
     data = combineData(images, labels)
