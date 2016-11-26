@@ -17,12 +17,19 @@ class Network:
         self.biases = [np.random.randn(y,1) for y in sizes[1:]]
         self.weights = [np.random.randn(y,x) for x, y in zip(sizes[:-1], sizes[1:])]
 
+        # Normalize weights and biases to [0,1]
+        for w,b in zip(self.weights, self.biases):
+            w -= w.min()
+            w /= w.max()
+            b -= b.min()
+            b /= b.max()
+
 
     def feedForward(self, a):
         """For input a, return output of network."""
 
         for b, w in zip(self.biases, self.weights):
-            a = relu(np.dot(w,a) + b)
+            a = activate(np.dot(w,a) + b)
         return a
 
     def SGD(self, trainingData, epochs, batchSize, eta):
@@ -60,8 +67,8 @@ class Network:
         cost function."""
 
         # Ensure orientation of vectors x and y
-        x = x.reshape(len(x), 1)
-        y = y.reshape(len(y), 1)
+        #x = x.reshape(len(x), 1)
+        #y = y.reshape(len(y), 1)
 
         nabla_b = [np.zeros(b.shape) for b in self.biases]
         nabla_w = [np.zeros(w.shape) for w in self.weights]
@@ -75,18 +82,18 @@ class Network:
         for b,w in zip(self.biases, self.weights):
             z = np.dot(w, activation) + b
             zs.append(z)
-            activation = relu(z)
+            activation = activate(z)
             activations.append(activation)
 
         # Backward pass
-        delta = self.costDerivative(activations[-1], y) * reluPrime(zs[-1])
+        delta = self.costDerivative(activations[-1], y) * activatePrime(zs[-1])
         nabla_b[-1] = delta
         nabla_w[-1] = np.dot(delta, activations[-2].T)
 
         # Work backwards from end of network, apply chain rule
         for l in range(2, self.numLayers):
             z = zs[-l]
-            delta = np.dot(self.weights[-l+1].T, delta) * reluPrime(z)
+            delta = np.dot(self.weights[-l+1].T, delta) * activatePrime(z)
             nabla_b[-l] = delta
             nabla_w[-l] = np.dot(delta, activations[-l-1].T)
 
@@ -104,17 +111,32 @@ class Network:
 
 ### Other functions
 
+def sigmoidFloat(z):
+    return 1.0/(1.0 + np.exp(-z))
+
+def sigmoidPrimeFloat(z):
+    return sigmoidFloat(z)*(1 - sigmoidFloat(z))
+
+sigmoid = np.frompyfunc(sigmoidFloat, 1, 1)
+sigmoidPrime = np.frompyfunc(sigmoidPrimeFloat, 1, 1)
+
 def reluFloat(z):
     return max(0,z)
-
-relu = np.frompyfunc(reluFloat, 1, 1)
 
 def reluPrimeFloat(z):
     if z > 0:
         return 1
     return 0
 
+relu = np.frompyfunc(reluFloat, 1, 1)
 reluPrime = np.frompyfunc(reluPrimeFloat, 1, 1)
+
+# Choose activation function
+
+activate = sigmoid
+activatePrime = sigmoidPrime
+#activate = relu
+#activatePrime = reluPrime
 
 def test(data):
     # Architecture:
@@ -126,20 +148,23 @@ def test(data):
     sizes = [64, 100, 10]
     ANN = Network(sizes)
 
-    numEpochs = 30
-    batchSize = 10
-    learningRate = 3.0
+    numEpochs = 1
+    batchSize = 100
+    learningRate = 1.0
 
-    x = [x.reshape(len(x), 1) for x,y in data]
-    y = [y.reshape(len(y), 1) for x,y in data]
+    # Halve data set for faster testing
+    data = data[:int(len(data)/2)]
 
-    yhat = ANN.feedForward(x[0])
+    x = data[0][0]
+    y = data[0][1]
 
-    print(y[0] - yhat)
+    yhat = ANN.feedForward(x)
+    print(y - yhat)
+
     timeFunc(ANN.SGD, data, numEpochs, batchSize, learningRate)
 
-    yhat = ANN.feedForward(x[0])
-    print(y[0] - yhat)
+    yhat = ANN.feedForward(x)
+    print(y - yhat)
 
 
 
