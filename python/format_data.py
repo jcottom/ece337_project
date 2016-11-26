@@ -125,3 +125,13 @@ def showImage(data, num):
     plt.imshow(image, interpolation="nearest")
     plt.show()
     print("Label: " + str(label))
+
+def genAtomData():
+    imageFile = "train-images-idx3-ubyte"
+    outdb = "images.db"
+    images = scaleData(getImageData(imageFile))
+
+    with open(outdb, "wb") as fp:
+        for image in images[:10]:
+            for pixel in image:
+                fp.write(pixel)
