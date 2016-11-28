@@ -47,7 +47,6 @@ module node
 			add2 = 0;
 		end  
 		else begin
-			// node_out = Activation functiion
 			add2 = out;
 		end
 	end
@@ -64,10 +63,10 @@ module node
 		end
 	end
 
-	always_comb begin
-		fixed_point_mult(.a(coef[cnt_val]), .b(data_in[cnt_val]), .result(add1)); //add1 = coef[cnt_val] * data_in[cnt_val];
-		fixed_point_add(.a(add2), .b(add1), .result(sum)); //sum = add1 + add2
-	end
+
+	fixed_point_mult (.a(coef[cnt_val]), .b(data_in[cnt_val]), .result(add1)); //add1 = coef[cnt_val] * data_in[cnt_val];
+	fixed_point_add  (.a(add2), .b(add1), .result(sum)); //sum = add1 + add2
+	activation       (.in(add2) ,.out(node_out));
 
 
 endmodule
