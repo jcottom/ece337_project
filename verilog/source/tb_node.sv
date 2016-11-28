@@ -49,6 +49,13 @@ module tb_node ();
 		//GOLD standard for determining expected output
 
 		//Tets n_rst
+		tb_n_rst = 0;
+
+		#(PERIOD * 2)
+
+		assert(tb_node_out == 0) 
+		else $error("Unable to reset node_out");
+		
 		//Test Rest of accumulator
 
 
