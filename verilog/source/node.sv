@@ -28,7 +28,7 @@ module node
 	input wire [6:0] cnt_val,
 	input wire [15:0] coef [63:0],
 	input wire [15:0] data_in [63:0],
-	output wire [2:0] node_out
+	output reg [2:0] node_out
 );
 
 //initialize internal variables
