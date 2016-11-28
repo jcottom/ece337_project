@@ -77,13 +77,13 @@ void test32( PCIE_HANDLE hPCIe, DWORD addr )
       bPass = PCIE_Write32( hPCIe, pcie_bars[0], addr, testVal);
       if (!bPass)
         {
-          printf("test FAILED: write did not return success");
+          printf("test FAILED: write did not return success\n");
           return;
         }
       bPass = PCIE_Read32( hPCIe, pcie_bars[0], addr, &readVal);
       if (!bPass)
         {
-          printf("test FAILED: read did not return success");
+          printf("test FAILED: read did not return success\n");
           return;
         }
       if (testVal == readVal)
@@ -119,13 +119,13 @@ void testDMA( PCIE_HANDLE hPCIe, DWORD addr)
   bPass = PCIE_DmaWrite(hPCIe, addr, testArray, MAXDMA);// * RWSIZE );
   if (!bPass)
     {
-      printf("test FAILED: write did not return success");
+      printf("test FAILED: write did not return success\n");
       return;
     }
   bPass = PCIE_DmaRead(hPCIe, addr, readArray, MAXDMA);// * RWSIZE );
   if (!bPass)
     {
-      printf("test FAILED: read did not return success");
+      printf("test FAILED: read did not return success\n");
       return;
     }
   i = 0;
@@ -205,13 +205,13 @@ void writeToSDRAM(PCIE_HANDLE hPCIe, DWORD addr, BYTE data[64]){
   bPass = PCIE_DmaWrite(hPCIe, addr, data, 64);// * RWSIZE );
   if (!bPass)
     {
-      printf("test FAILED: write did not return success");
+      printf("test FAILED: write did not return success\n");
       return;
     }
   bPass = PCIE_DmaRead(hPCIe, addr, readArray, 64);// * RWSIZE );
   if (!bPass)
     {
-      printf("test FAILED: read did not return success");
+      printf("test FAILED: read did not return success\n");
       return;
     }
   i = 0;
