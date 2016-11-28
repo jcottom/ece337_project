@@ -26,16 +26,16 @@ module node
 	input wire start,
 	input wire reset_acc,
 	input wire [6:0] cnt_val,
-	input wire [15:0] coef [63:0],
+	input wire [15:0] coef [15:0],
 	input wire [15:0] data_in [63:0],
-	output reg [2:0] node_out
+	output reg [15:0] node_out
 );
 
 //initialize internal variables
-	reg add1; //next value to add to the accumulator
-	reg add2; 
-	reg sum;
-	reg out;
+	reg [31:0] add1; //next value to add to the accumulator
+	reg [31:0] add2; 
+	reg [31:0] sum;
+	reg [31:0] out;
 	reg accumulator; //stoes total sum of all the multiplication and addition
 
 //create instance of the activatin funciton
@@ -64,9 +64,9 @@ module node
 	end
 
 
-	fixed_point_mult (.a(coef[cnt_val]), .b(data_in[cnt_val]), .result(add1)); //add1 = coef[cnt_val] * data_in[cnt_val];
-	fixed_point_add  (.a(add2), .b(add1), .result(sum)); //sum = add1 + add2
-	activation       (.in(add2) ,.out(node_out));
+	fixed_point_mult mult(.a(coef[cnt_val]), .b(data_in[cnt_val]), .result(add1)); //add1 = coef[cnt_val] * data_in[cnt_val];
+	fixed_point_add  add(.a(add2), .b(add1), .result(sum)); //sum = add1 + add2
+	activation       active(.in(add2) ,.out(node_out));
 
 
 endmodule

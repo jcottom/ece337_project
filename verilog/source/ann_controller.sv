@@ -23,7 +23,7 @@ module ann_controller
    	output reg [1:0] load_next,
    	output reg request_coef,
    	output reg done_processing,
-   	output reg [6:0] coef_select
+   	output reg coef_select
 );
 
 typedef enum bit [2:0] {WAIT_IMAGE, REQUEST_COEF, WAIT_COEF, START_LAYER, WAIT_LAYER, INCR_LAYER, CHECK_DONE, DISPLAY_OUT} all_states;
