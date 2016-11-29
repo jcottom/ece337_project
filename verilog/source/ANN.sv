@@ -11,7 +11,7 @@ module ANN
 #(
 	parameter INPUT_LAYER = 16,
 	parameter SECOND_LAYER = 4,
-	parameter THIRD_LAYER = 1	
+	parameter THIRD_LAYER = 10	
 )
 (
 	input wire clk,
@@ -64,6 +64,7 @@ begin
 		//reset the pipeline register	
 		for(int i = 0; i < 64; i++) begin
 			ANN_pipeline_register[i] <= 0;
+			node_out[i] <= 0;
 		end	
 		
 	end 
@@ -71,8 +72,11 @@ begin
 	if(load_next == 1) begin
 		ANN_pipeline_register <= image;
 	end
-	else begin
+	else if(load_next == 2) begin
 		ANN_pipeline_register <= node_out;
+	end
+	else begin
+		ANN_pipeline_register <= ANN_pipeline_register;
 	end
 end
 

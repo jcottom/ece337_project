@@ -35,7 +35,7 @@ module node
 	reg [31:0] add1; //next value to add to the accumulator
 	reg [31:0] add2; 
 	reg [31:0] sum;
-	reg [31:0] out;
+	reg [31:0] nxt_out;
 	reg accumulator; //stoes total sum of all the multiplication and addition
 
 //create instance of the activatin funciton
@@ -43,23 +43,23 @@ module node
 	always_ff @ (posedge clk, negedge n_rst)
 	begin
 		if(n_rst == 0) begin
-			node_out = 0;
-			add2 = 0;
+			node_out <= 0;
+			add2 <= 0;
 		end  
 		else begin
-			add2 = out;
+			add2 <= nxt_out;
 		end
 	end
 	
-	always @ (start, reset_acc) begin
+	always_comb begin
 		if(reset_acc == 1) begin
-			out = 0;
+			nxt_out = 0;
 		end  
 		else if (start == 0) begin
-			out = sum;
+			nxt_out = sum;
 		end
 		else begin
-			out = add2;
+			nxt_out = add2;
 		end
 	end
 

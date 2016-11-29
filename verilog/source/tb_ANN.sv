@@ -54,12 +54,13 @@ module tb_ANN
 
 	task wait_coef_request;
 	begin
-		tb_image_weights_loaded = 1;
-		@(posedge tb_clk);
-		tb_image_weights_loaded = 0;
-		#(1);
+		while(tb_request_coef == 0) begin
+			#(1);
+		end
 	end
 	endtask
+
+	
 
 	// Test bench process
 	initial
@@ -67,13 +68,15 @@ module tb_ANN
 		//set initial conditions
 		tb_image_weights_loaded = 0;			
 		
-
+		reset();
+		
+		//sets the weights and image to a known value
 		for(int i = 0; i < 64; i++) begin
 			//set the weights to 0			
 			for(int j = 0; j < 16; j++) begin
-				tb_weights[i][j] = 0;	
+				tb_weights[i][j] = 1;	
 			end
-			tb_image[i] = 0;  //set the image to 0
+			tb_image[i] = 1;  //set the image to 0
 		end		
 
 		//reset everything		

@@ -12,6 +12,11 @@
 
 
 module ann_controller
+#(
+	parameter INPUT_LAYER = 16,
+	parameter SECOND_LAYER = 4,
+	parameter THIRD_LAYER = 10	
+)
 (
 	input wire clk,
 	input wire n_rst,
@@ -90,7 +95,17 @@ always_comb begin
 		end
 	endcase
 	
-	max_input = 16;  //make this max input based on a look up table
+	if(cur_layer == 0) begin
+		max_input = INPUT_LAYER;
+	end 
+	else if(cur_layer == 1) begin
+		max_input = SECOND_LAYER;
+	end
+	else begin
+		max_input = THIRD_LAYER;
+	end
+
+	//max_input = 16;  //make this max input based on a look up table
 	coeff_ready = 1;
 	reset_accum = 0;
    	load_next = 0;
@@ -101,6 +116,7 @@ always_comb begin
 	
 	case(state)
 		WAIT_IMAGE: begin
+			load_next = 1;	
 			//wait for image to load
 			coeff_ready = 0;
 		end
@@ -113,18 +129,19 @@ always_comb begin
 			coeff_ready = 0;
 		end
 		START_LAYER: begin
-			reset_accum = 1;	
+			reset_accum = 1;
+			coeff_ready = 0;	
 		end
 		WAIT_LAYER: begin
 			
 		end
 		INCR_LAYER: begin
+			load_next = 2; //tell the control register to load the output of the nodes			
 			nxt_layer = cur_layer + 1;
 			coeff_ready = 0;
 		end	
 		CHECK_DONE: begin
 			coeff_ready = 0;
-			load_next = 1;
 		end
 		DISPLAY_OUT: begin
 			done_processing = 1;			

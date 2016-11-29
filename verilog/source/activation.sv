@@ -8220,6 +8220,6 @@ module activation(
 16'h00A0, 16'h00A0, 16'h00A0, 16'h00A1, 16'h00A1, 16'h00A1, 16'h00A1, 16'h00A2,
 16'h00A2, 16'h00A2, 16'h00A2, 16'h00A3, 16'h00A3, 16'h00A3, 16'h00A3, 16'h00A4
                                                       };
-   assign out = lut[in];
+   assign out = in[15:0];//lut[in];
 
 endmodule // activation
