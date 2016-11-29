@@ -10,6 +10,12 @@
 
 module tb_ANN
 ();		
+	parameter  IMAGE_FILE   = "./image.txt";
+	parameter  COEF_FILE    = "./coef.txt";	
+	int image_file;
+	int coef_file;
+	reg [7:0] temp;
+
 	localparam CLK_PERIOD = 10.0ns;	
 
 	//test bench values
@@ -17,7 +23,7 @@ module tb_ANN
 	reg tb_n_rst;
 	reg tb_image_weights_loaded;
 	reg [15:0] tb_image [63:0];
-	reg [15:0] tb_weights [63:0][15:0];
+	reg [15:0] tb_weights [15:0][63:0];
 	reg tb_done_processing;
 	reg tb_request_coef;
 	reg tb_coef_select;
@@ -59,12 +65,93 @@ module tb_ANN
 		end
 	end
 	endtask
+	
+	//task that loads a 64 pixel image
+	task load_image_64;	
+	begin
+		// Open the input file
+		image_file = $fopen(IMAGE_FILE, "rb");
+		
+		//read 64 short integers
+		for(int i = 0; i < 64; i++) begin
+			temp = $fgetc(image_file);
+			tb_image[i][15:8] = temp; 
+			temp = $fgetc(image_file);
+			tb_image[i][7:0] = temp;
+		end
+	end
+	endtask
+
+	task load_image_32;	
+	begin
+		// Open the input file
+		image_file = $fopen(IMAGE_FILE, "rb");
+		
+		//read 16 short integers
+		for(int i = 0; i < 16; i++) begin
+			temp = $fgetc(image_file);
+			tb_image[i][15:8] = temp; 
+			temp = $fgetc(image_file);
+			tb_image[i][7:0] = temp;
+		end
+		
+	end
+	endtask
+
+	task load_coef_first;
+	begin
+		// Open the input file
+		coef_file = $fopen(COEF_FILE, "rb");
+		
+		//read 16 short integers
+		for(int i = 0; i < 16; i++) begin
+			temp = $fgetc(image_file);
+			tb_image[i][15:8] = temp; 
+			temp = $fgetc(image_file);
+			tb_image[i][7:0] = temp;
+		end
+	end
+	endtask
+
+	task load_coef_second;
+	begin
+		// Open the input file
+		coef_file = $fopen(COEF_FILE, "rb");
+		
+		//read 16 short integers
+		for(int i = 0; i < 16; i++) begin
+			temp = $fgetc(image_file);
+			tb_image[i][15:8] = temp; 
+			temp = $fgetc(image_file);
+			tb_image[i][7:0] = temp;
+		end
+	end
+	endtask
+
+	task load_coef_third;
+	begin
+		// Open the input file
+		coef_file = $fopen(COEF_FILE, "rb");
+		
+		//read 16 short integers
+		for(int i = 0; i < 16; i++) begin
+			temp = $fgetc(image_file);
+			tb_image[i][15:8] = temp; 
+			temp = $fgetc(image_file);
+			tb_image[i][7:0] = temp;
+		end
+	end
+	endtask
 
 	
 
 	// Test bench process
 	initial
 	begin	
+	
+		//load_image_64();
+
+
 		//set initial conditions
 		tb_image_weights_loaded = 0;			
 		

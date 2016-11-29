@@ -23,7 +23,7 @@
  factor, which is used by the tb_activation module.
  */
 module activation(
-                  input wire [15:0]  in,
+                  input wire [31:0]  in,
                   output wire [15:0] out
                   );
    reg [15:0]                       lut [0:65535] = '{

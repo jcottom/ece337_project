@@ -13,7 +13,7 @@
 
 module ann_controller
 #(
-	parameter INPUT_LAYER = 16,
+	parameter FIRST_LAYER = 16,
 	parameter SECOND_LAYER = 4,
 	parameter THIRD_LAYER = 10	
 )
@@ -25,7 +25,7 @@ module ann_controller
    	output reg [6:0] max_input,
 	output reg coeff_ready,
 	output reg reset_accum,
-   	output reg [1:0] load_next,
+   	output reg [2:0] load_next,
    	output reg request_coef,
    	output reg done_processing,
    	output reg coef_select
@@ -42,7 +42,7 @@ all_states nxt_state;
 reg [2:0] cur_layer;
 reg [2:0] nxt_layer;
 
-localparam max_layers = 4;
+localparam max_layers = 3;
 
 
 
@@ -96,7 +96,7 @@ always_comb begin
 	endcase
 	
 	if(cur_layer == 0) begin
-		max_input = INPUT_LAYER;
+		max_input = FIRST_LAYER;
 	end 
 	else if(cur_layer == 1) begin
 		max_input = SECOND_LAYER;
@@ -116,7 +116,7 @@ always_comb begin
 	
 	case(state)
 		WAIT_IMAGE: begin
-			load_next = 1;	
+			load_next = 4;	
 			//wait for image to load
 			coeff_ready = 0;
 		end
@@ -136,7 +136,7 @@ always_comb begin
 			
 		end
 		INCR_LAYER: begin
-			load_next = 2; //tell the control register to load the output of the nodes			
+			load_next = cur_layer + 1; //tell the control register to load the output of the nodes			
 			nxt_layer = cur_layer + 1;
 			coeff_ready = 0;
 		end	
