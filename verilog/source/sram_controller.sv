@@ -64,6 +64,7 @@ always_comb begin
 		DONE_IMAGE: begin
 			nxt_state = COEF_IDLE;
 			image_weights_loaded = 1;
+			n_coef_image = 0;
 		end
 		COEF_IDLE: begin
 			if(request_coef == 1)
@@ -74,6 +75,7 @@ always_comb begin
 		LOAD_COEF: begin 
 			nxt_state = WAIT_COEF;
 			start_sram = 1;
+			n_coef_image = 0;
 		end
 		WAIT_COEF: begin
 			if(sram_done == 1)
