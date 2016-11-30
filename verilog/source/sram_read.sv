@@ -8,6 +8,8 @@
 
 module sram_read
 (
+	input wire clk,
+	input wire n_rst,
 	input wire [31:0] read_data,
 	input wire read_next,
 	input wire start_addr,
@@ -15,4 +17,23 @@ module sram_read
 	output reg read
 );
 
+	reg next_add;
+
+	always_ff @ (posedge clk, negedge n_rst) begin
+		if (!n_rst)
+			address = start_addr;
+		else
+			address = next_add;
+	end
+
+	always_comb begin
+		address = start_addr;
+
+		if (read_next) begin
+			next_add = address + 1;
+		end 
+	end
+
+	//call sram_interface ();
+	
 endmodule
