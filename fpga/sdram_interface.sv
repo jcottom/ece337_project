@@ -21,20 +21,23 @@ module sdram_interface #(
     input wire                             get_coeffs, // Pulsed high when layer coefficients are needed
     input wire [NUMLAYERS-1:0]             layer, // Specifies which layer to retrieve
     output wire [64*8-1:0]                 image_data_o, // Contains all 64 pixels of image data
-    output reg [2048*8-1:0]                coeff_data_o, // Contains all coefficients for requested layer
+    output reg [128*8-1:0]                 coeff_data_0, // Contains all coefficients for requested layer
+    output reg [128*8-1:0]                 coeff_data_1, // Contains all coefficients for requested layer
+    output reg [128*8-1:0]                 coeff_data_2, // Contains all coefficients for requested layer
+    output reg [128*8-1:0]                 coeff_data_3, // Contains all coefficients for requested layer
+    output reg [128*8-1:0]                 coeff_data_4, // Contains all coefficients for requested layer
+    output reg [128*8-1:0]                 coeff_data_5, // Contains all coefficients for requested layer
+    output reg [128*8-1:0]                 coeff_data_6, // Contains all coefficients for requested layer
+    output reg [128*8-1:0]                 coeff_data_7, // Contains all coefficients for requested layer
+    output reg [128*8-1:0]                 coeff_data_8, // Contains all coefficients for requested layer
+    output reg [128*8-1:0]                 coeff_data_9, // Contains all coefficients for requested layer
+    output reg [128*8-1:0]                 coeff_data_10, // Contains all coefficients for requested layer
+    output reg [128*8-1:0]                 coeff_data_11, // Contains all coefficients for requested layer
+    output reg [128*8-1:0]                 coeff_data_12, // Contains all coefficients for requested layer
+    output reg [128*8-1:0]                 coeff_data_13, // Contains all coefficients for requested layer
+    output reg [128*8-1:0]                 coeff_data_14, // Contains all coefficients for requested layer
+    output reg [128*8-1:0]                 coeff_data_15, // Contains all coefficients for requested layer
     output reg                             busy, // Set high when reading data
-
-    // Bus Slave Interface
-   /*
-    input logic [SLAVE_ADDRESSWIDTH-1:0]   slave_address,
-    input logic [DATAWIDTH-1:0]            slave_writedata,
-    input logic                            slave_write,
-    input logic                            slave_read,
-    input logic                            slave_chipselect,
-    //      input logic  slave_readdatavalid, 			// These signals are for variable latency reads.
-    //	output logic slave_waitrequest,   			// See the Avalon Specifications for details  on how to use them.
-    output logic [DATAWIDTH-1:0]           slave_readdata,
-   */
 
     // Bus Master Interface
     output logic [MASTER_ADDRESSWIDTH-1:0] master_address,
@@ -75,11 +78,12 @@ module sdram_interface #(
    state_t state, nextState;
 
    assign image_data_o = image_data;
-   assign coeff_data_o = coeff_data;
+   //assign coeff_data_o = coeff_data;
+   assign {coeff_data_0, coeff_data_1, coeff_data_2, coeff_data_3, coeff_data_4, coeff_data_5, coeff_data_6, coeff_data_7, coeff_data_8, coeff_data_9, coeff_data_10, coeff_data_11, coeff_data_12, coeff_data_13, coeff_data_14, coeff_data_15} = coeff_data;
 
    // Master Side
 
-   always_ff @ ( posedge clk ) begin
+   always_ff @ ( posedge clk, negedge reset_n) begin
       if (!reset_n) begin
          address <= SDRAM_ADDR;
          reg_index <= 0;
@@ -88,6 +92,7 @@ module sdram_interface #(
          read_data <= 32'hFEEDFEED;
          read_data_registers <= '0;
       end else begin
+         //$display("%t state: %d, nextState: %d", $time, state, nextState);
          state <= nextState;
          address <= nextAddress;
          reg_index <= nextRegIndex;
@@ -116,6 +121,7 @@ module sdram_interface #(
            nextAddress = SDRAM_ADDR;
            nextRegIndex = 0;
            if (get_image && address >= SDRAM_ADDR) begin
+              //$display("%t address: %h, SDRAM_ADDR: %h, get_image: %b", $time, address, SDRAM_ADDR, get_image);
               nextState = IMREAD;
            end else if (get_coeffs && layer == 2'h0 && address >= SDRAM_ADDR) begin
               nextState = L0READ;

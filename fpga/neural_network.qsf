@@ -48,7 +48,7 @@ set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 # Analysis & Synthesis Assignments
 # ================================
 set_global_assignment -name FAMILY "Cyclone IV GX"
-set_global_assignment -name TOP_LEVEL_ENTITY neural_network
+set_global_assignment -name TOP_LEVEL_ENTITY nn_test
 set_global_assignment -name DEVICE_FILTER_PACKAGE FBGA
 
 # Fitter Assignments
@@ -530,18 +530,11 @@ set_location_assignment PIN_AF28 -to FAN_CTRL
 # end ENTITY(neural_network)
 # --------------------------
 
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
-set_global_assignment -name QIP_FILE neural_network_bus/synthesis/neural_network_bus.qip
-set_global_assignment -name SYSTEMVERILOG_FILE sdram_interface.sv
-set_global_assignment -name SYSTEMVERILOG_FILE display.sv
-set_global_assignment -name SYSTEMVERILOG_FILE neural_network.sv
 set_global_assignment -name EDA_SIMULATION_TOOL "QuestaSim (SystemVerilog)"
 set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
 set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "SYSTEMVERILOG HDL" -section_id eda_simulation
@@ -554,4 +547,13 @@ set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
 set_global_assignment -name ACTIVE_SERIAL_CLOCK FREQ_40MHZ
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name QIP_FILE verification_bus/synthesis/verification_bus.qip
+set_global_assignment -name SYSTEMVERILOG_FILE nn_test.sv
+set_global_assignment -name QIP_FILE neural_network_bus/synthesis/neural_network_bus.qip
+set_global_assignment -name SYSTEMVERILOG_FILE sdram_interface.sv
+set_global_assignment -name SYSTEMVERILOG_FILE display.sv
+set_global_assignment -name SYSTEMVERILOG_FILE neural_network.sv
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

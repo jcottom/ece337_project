@@ -214,6 +214,41 @@
    internal="sdram_interface.conduit_end"
    type="conduit"
    dir="end" />
+ <interface
+   name="pcie_ip_test_in"
+   internal="pcie_ip.test_in"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="pcie_ip_clocks_sim"
+   internal="pcie_ip.clocks_sim"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="pcie_ip_reconfig_busy"
+   internal="pcie_ip.reconfig_busy"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="pcie_ip_pipe_ext"
+   internal="pcie_ip.pipe_ext"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="pcie_ip_powerdown"
+   internal="pcie_ip.powerdown"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="pcie_ip_reconfig_togxb"
+   internal="pcie_ip.reconfig_togxb"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="pcie_ip_reconfig_fromgxb_0"
+   internal="pcie_ip.reconfig_fromgxb_0"
+   type="conduit"
+   dir="end" />
  <module kind="clock_source" version="14.0" enabled="1" name="clk_50">
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="clockFrequencyKnown" value="true" />
@@ -598,16 +633,6 @@
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection kind="clock" version="14.0" start="clk_50.clk" end="sdram.clk" />
- <connection kind="avalon" version="14.0" start="pcie_ip.bar2" end="sgdma.csr">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x4040" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection kind="avalon" version="14.0" start="pcie_ip.bar2" end="pcie_ip.cra">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
  <connection
    kind="avalon"
    version="14.0"
@@ -695,6 +720,16 @@
    end="sdram.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x08000000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="avalon" version="14.0" start="pcie_ip.bar2" end="pcie_ip.cra">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x4000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="avalon" version="14.0" start="pcie_ip.bar2" end="sgdma.csr">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />

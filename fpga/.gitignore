@@ -17,8 +17,11 @@ libraries
 
 simulation/*
 neural_network_bus/*
+verification_bus/*
 output_files/*
 *.sopcinfo
 *.txt
 .qsys*
 *.swp
+*.qws
+*.ini
