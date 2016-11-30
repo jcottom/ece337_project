@@ -16,7 +16,8 @@ def genLUT():
     16bit values instead of a case statement, so this function doesn't really
     serve a purpose any longer.
 
-    This function generates a look-up table for the sigmoid function, for use with fixed-point inputs/outputs
+    This function generates a look-up table for the sigmoid function, for use
+    with fixed-point inputs/outputs
     '''
     # scaling factor s
     # maps 2**15 - 1 -> 100
@@ -42,11 +43,19 @@ def genLUTPat():
     it. Note that for these values to be useful, the variable "s" must be the
     same as used in genLUTArray().
     '''
-    s = 100/(2**15 - 1)
+    si = 1/(2**8)
+    so = 1/(2**12)
 
-    for i in range(-2**15, 2**15):
-        o = np.int16(np.round(sig(i*s)/s))
+    # Positive numbers
+    for i in range(0, 2**15):
+        o = np.int16(np.round(sig(i*si)/so))
         outs = "{:016b} {:016b}".format(i%2**16,o%2**16)
+        print(outs)
+
+    # Negative numbers
+    for i in range(0, 2**15):
+        o = np.int16(np.round(sig(-1*i*si)/so))
+        outs = "{:016b} {:016b}".format((2**15+ i)%2**16,o%2**16)
         print(outs)
     return
 
@@ -68,19 +77,23 @@ def genLUTArray():
     values, which doesn't do our neural network any good, but if x is too high,
     we cannot represent larger numbers with our encoding.
     '''
-    s = 100/(2**15 - 1)
+    si = 1/(2**8)
+    so = 1/(2**12)
 
     outs = ""
+
+    # Positive numbers first
     for idx, i in  enumerate(range(0, 2**15)):
         if(idx % 8 == 0):
             outs = outs + '\n'
-        o = np.int16(np.round(sig(i*s)/s))
+        o = np.int16(np.round(sig(i*si)/so))
         outs = outs + "16'h{:04X}, ".format(o)
 
-    for idx, i in  enumerate(range(-2**15, 0)):
+    # Negative numbers next
+    for idx, i in  enumerate(range(-2**15+1, 1)[::-1]):
         if(idx % 8 == 0):
             outs = outs + '\n'
-        o = np.int16(np.round(sig(i*s)/s))
+        o = np.int16(np.round(sig(i*si)/so))
         outs = outs + "16'h{:04X}, ".format(o)
 
     print(outs)
