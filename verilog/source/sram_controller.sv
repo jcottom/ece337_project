@@ -36,6 +36,11 @@ begin
 	end
 end
 
+	//initial states for the output variables
+	image_weights_loaded = 0;
+	n_coef_image = 0;
+	start_sram = 0;
+
 always_comb begin
 	
 	//next state logic
@@ -43,18 +48,22 @@ always_comb begin
 	
 	case(state)
 		START_IDLE: begin
-    		if(start_detecting == 1)
+    			if(start_detecting == 1)
 				nxt_state = LOAD_IMAGE;
 		end
 		LOAD_IMAGE: begin
 			nxt_state = WAIT_IMAGE;
+			n_coef_image = 1;  //request the image
+			start_sram = 1;
 		end
 		WAIT_IMAGE: begin
 			if(sram_done == 1) 
 				nxt_state = DONE_IMAGE;
+			n_coef_image = 1;  //request the image
 		end
 		DONE_IMAGE: begin
 			nxt_state = COEF_IDLE;
+			image_weights_loaded = 1;
 		end
 		COEF_IDLE: begin
 			if(request_coef == 1)
@@ -64,6 +73,7 @@ always_comb begin
 		end
 		LOAD_COEF: begin 
 			nxt_state = WAIT_COEF;
+			start_sram = 1;
 		end
 		WAIT_COEF: begin
 			if(sram_done == 1)
@@ -71,38 +81,6 @@ always_comb begin
 		end
 		COEF_DONE: begin
 			nxt_state = COEF_IDLE;
-		end
-	endcase
-
-	//initial states for the output variables
-	image_weights_loaded = 0;
-	n_coef_image = 0;
-	start_sram = 0;
-	
-	case(state)
-		START_IDLE: begin
-    		//nothing changed
-		end
-		LOAD_IMAGE: begin
-			n_coef_image = 1;  //request the image
-			start_sram = 1;
-		end
-		WAIT_IMAGE: begin
-			n_coef_image = 1;  //request the image
-		end
-		DONE_IMAGE: begin
-			image_weights_loaded = 1;
-		end
-		COEF_IDLE: begin
-			//nothing changed
-		end
-		LOAD_COEF: begin 
-			start_sram = 1;
-		end
-		WAIT_COEF: begin
-			
-		end
-		COEF_DONE: begin
 			image_weights_loaded = 1;
 		end
 	endcase
