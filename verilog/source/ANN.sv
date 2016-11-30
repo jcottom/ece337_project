@@ -70,21 +70,21 @@ begin
 	//if reset	
 	if(n_rst == 0) begin
 		//reset the pipeline register	
-		for(int i = 0; i < IMAGE_SIZE; i++) begin
+		/*for(int i = 0; i < IMAGE_SIZE; i++) begin
 			ANN_pipeline_register[i] <= 0;
 			node_out[i] <= 0;
-		end	
+		end*/	
 		
 	end 
 	
 
 
 	//if load next values is ,4 load the initial image 
-	if(load_next == 4) begin
+	/*if(load_next == 4) begin
 		ANN_pipeline_register <= image;
-	end
+	end*/
 	//if load next = 1, load all nodes used in the first layer
-	else if(load_next == 1) begin
+	/*else if(load_next == 1) begin
 		ANN_pipeline_register[FIRST_LAYER - 1:0] <= node_out[FIRST_LAYER - 1:0];
 		for(int i = FIRST_LAYER; i < IMAGE_SIZE; i++) begin
 			ANN_pipeline_register[i] <= 0;
@@ -108,7 +108,7 @@ begin
 	//else keep the regsiter the same
 	else begin
 		ANN_pipeline_register <= ANN_pipeline_register;
-	end
+	end*/
 end
 
 

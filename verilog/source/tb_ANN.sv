@@ -31,7 +31,7 @@ module tb_ANN
 	reg tb_coef_select;
 	reg [7:0] tb_seven_seg;
 
-	ANN #(.IMAGE_SIZE(IMAGE_SIZE)) dut(.clk(tb_clk),.n_rst(tb_n_rst),.image_weights_loaded(tb_image_weights_loaded),.image(tb_image),.weights(tb_weights),.done_processing(tb_done_processing),.request_coef(tb_request_coef),.coef_select(tb_coef_select),.seven_seg(tb_seven_seg));
+	ANN  dut(.clk(tb_clk),.n_rst(tb_n_rst),.image_weights_loaded(tb_image_weights_loaded),.image(tb_image),.weights(tb_weights),.done_processing(tb_done_processing),.request_coef(tb_request_coef),.coef_select(tb_coef_select),.seven_seg(tb_seven_seg));
 	
 	// Clock gen block
 	always

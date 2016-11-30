@@ -66,7 +66,7 @@ module node
 
 	fixed_point_mult mult(.a(coef[cnt_val]), .b(data_in[cnt_val]), .result(add1)); //add1 = coef[cnt_val] * data_in[cnt_val];
 	fixed_point_add  add(.a(add2), .b(add1), .result(sum)); //sum = add1 + add2
-	activation       active(.in(add2) ,.out(node_out));
+	activation       active(.in(add2[31:16]) ,.out(node_out));
 
 
 endmodule

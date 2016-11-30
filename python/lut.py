@@ -59,6 +59,31 @@ def genLUTPat():
         print(outs)
     return
 
+def genLUTNums():
+    '''
+    This function generates the output for testing the module in activation.sv,
+    used by tb_activation.sv. If genLUTPat() is in main(), just run
+    python3 lut.py > lut.pat, and make sure lut.pat is in
+    ece337_project/python/, as that is where tb_activation.sv will be expecting
+    it. Note that for these values to be useful, the variable "s" must be the
+    same as used in genLUTArray().
+    '''
+    si = 1/(2**8)
+    so = 1/(2**12)
+
+    # Positive numbers
+    for i in range(0, 2**15):
+        o = np.int16(np.round(sig(i*si)/so))
+        outs = "{:f} {:f}".format(((2**15+ i)*si)%2**16,(o*so)%2**16)
+        print(outs)
+
+    # Negative numbers
+    for i in range(0, 2**15):
+        o = np.int16(np.round(sig(-1*i*si)/so))
+        outs = "{:f} {:f}".format(((2**15+ i)*si)%2**16,(o*so)%2**16)
+        print(outs)
+    return
+
 def genLUTArray():
     '''
     This function generates the values of the lookup table used in
@@ -101,4 +126,4 @@ def genLUTArray():
     return
 
 if __name__ == "__main__":
-    genLUTPat()
+    genLUTNums()
