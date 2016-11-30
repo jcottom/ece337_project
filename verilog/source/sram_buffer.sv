@@ -8,8 +8,24 @@
 
 module sram_buffer
 (
+	input wire clk,
+	input wire n_rst,
 	input sram_data,
 	input sram_done,
+	input start_sram,
+	output [15:0] image [63:0],
+	output [15:0] weights [1023:0]
+);
+	always @ (posedge clk, negedge n_rst) begin
+		if (!n_rst) begin
+			for (i = 0; i < 64; i = i + 1) begin
+				image[i] = 'b0;
+			end
+			for (j = 0; j < 1024; j = j + 1) begin
+				weights[j] = 'b0;
+			end
+		end
+	end
 	
 
 endmodule
