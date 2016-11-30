@@ -15,7 +15,9 @@ module ann_controller
 #(
 	parameter FIRST_LAYER = 16,
 	parameter SECOND_LAYER = 4,
-	parameter THIRD_LAYER = 10	
+	parameter THIRD_LAYER = 10,
+
+	parameter IMAGE_SIZE = 64		
 )
 (
 	input wire clk,
@@ -96,13 +98,13 @@ always_comb begin
 	endcase
 	
 	if(cur_layer == 0) begin
-		max_input = FIRST_LAYER;
+		max_input = IMAGE_SIZE;
 	end 
 	else if(cur_layer == 1) begin
-		max_input = SECOND_LAYER;
+		max_input = FIRST_LAYER;
 	end
 	else begin
-		max_input = THIRD_LAYER;
+		max_input = SECOND_LAYER;
 	end
 
 	//max_input = 16;  //make this max input based on a look up table

@@ -26,7 +26,7 @@ module node
 	input wire start,
 	input wire reset_acc,
 	input wire [6:0] cnt_val,
-	input wire [15:0] coef [64 - 1:0],
+	input wire [15:0] coef [IMAGE_SIZE - 1:0],
 	input wire [15:0] data_in [IMAGE_SIZE - 1:0],
 	output reg [15:0] node_out
 );
