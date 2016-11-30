@@ -36,12 +36,12 @@ begin
 	end
 end
 
+
+always_comb begin
 	//initial states for the output variables
 	image_weights_loaded = 0;
 	n_coef_image = 0;
 	start_sram = 0;
-
-always_comb begin
 	
 	//next state logic
 	nxt_state = state;	
