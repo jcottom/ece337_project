@@ -153,7 +153,7 @@ module tb_ANN
 		for(int i = 0; i < 64; i++) begin
 			//set the weights to 0			
 			for(int j = 0; j < 16; j++) begin
-				tb_weights[j][i] = j;	
+				tb_weights[j][i] = 1;	
 			end
 			tb_image[i] = 1;  //set the image to 0
 		end		

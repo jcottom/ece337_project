@@ -10,7 +10,7 @@
 module ANN
 #(	
 	parameter FIRST_LAYER = 16,
-	parameter SECOND_LAYER = 4,
+	parameter SECOND_LAYER = 8,
 	parameter THIRD_LAYER = 10,
 
 	parameter IMAGE_SIZE = 16
@@ -35,10 +35,10 @@ reg [2:0] load_next;
 reg n_start_done;
 
 reg [15:0] ANN_pipeline_register [IMAGE_SIZE - 1:0];
+reg [15:0] nxt_ANN_pipeline_register [IMAGE_SIZE - 1:0];
 reg [15:0] all_zeros [IMAGE_SIZE - 1:0] ;  //variable used to zero out the ANN pipeline register
 reg [15:0] node_out [IMAGE_SIZE - 1:0];
-
-reg [15:0] nxt_ann_pipeline_val [IMAGE_SIZE - 1:0];
+reg nxt_done_processing;
 
 
 
@@ -62,7 +62,7 @@ input_node_timer timer(.clk(clk),.n_rst(n_rst), .max_input(max_input), .coef_rea
 
 //ANN controller
 ann_controller #(.IMAGE_SIZE(IMAGE_SIZE))controller(.clk(clk),.n_rst(n_rst),.image_weights_loaded(image_weights_loaded),.n_start_done(n_start_done),.max_input(max_input),.coeff_ready(coef_ready),
-			.reset_accum(reset_accum),.load_next(load_next),.request_coef(request_coef),.done_processing(done_processing),.coef_select(coef_select));
+			.reset_accum(reset_accum),.load_next(load_next),.request_coef(request_coef),.done_processing(nxt_done_processing),.coef_select(coef_select));
 
 
 always_ff @ (posedge clk, negedge n_rst)
@@ -70,45 +70,50 @@ begin
 	//if reset	
 	if(n_rst == 0) begin
 		//reset the pipeline register	
-		/*for(int i = 0; i < IMAGE_SIZE; i++) begin
+		for(int i = 0; i < IMAGE_SIZE; i++) begin
 			ANN_pipeline_register[i] <= 0;
 			node_out[i] <= 0;
-		end*/	
-		
+		end	
+		done_processing <= 0;
 	end 
+	else begin
+		ANN_pipeline_register <= nxt_ANN_pipeline_register;
+		done_processing <= nxt_done_processing;
+	end
+
 	
+end
 
-
+always_comb begin
 	//if load next values is ,4 load the initial image 
-	/*if(load_next == 4) begin
-		ANN_pipeline_register <= image;
-	end*/
+	if(load_next == 4) begin
+		nxt_ANN_pipeline_register <= image;
+	end
 	//if load next = 1, load all nodes used in the first layer
-	/*else if(load_next == 1) begin
-		ANN_pipeline_register[FIRST_LAYER - 1:0] <= node_out[FIRST_LAYER - 1:0];
+	else if(load_next == 1) begin
+		nxt_ANN_pipeline_register[FIRST_LAYER - 1:0] <= node_out[FIRST_LAYER - 1:0];
 		for(int i = FIRST_LAYER; i < IMAGE_SIZE; i++) begin
-			ANN_pipeline_register[i] <= 0;
+			nxt_ANN_pipeline_register[i] <= 0;
 		end
 	end
 	//if load next = 2, load all nodes used in the second layer
 	else if(load_next == 2) begin
-		ANN_pipeline_register[SECOND_LAYER - 1:0] <= node_out[SECOND_LAYER - 1:0];
+		nxt_ANN_pipeline_register[SECOND_LAYER - 1:0] <= node_out[SECOND_LAYER - 1:0];
 		for(int i = SECOND_LAYER; i < IMAGE_SIZE; i++) begin
-			ANN_pipeline_register[i] <= 0;
+			nxt_ANN_pipeline_register[i] <= 0;
 		end
 	end	
 	//if load next = 3, load all nodes used in the third layer
 	else if(load_next == 3) begin
-		ANN_pipeline_register[THIRD_LAYER - 1:0] <= node_out[THIRD_LAYER - 1:0];
-		//ANN_pipeline_register[IMAGE_SIZE - 1:THIRD_LAYER] <= all_zeros[IMAGE_SIZE - 1:THIRD_LAYER];
+		nxt_ANN_pipeline_register[THIRD_LAYER - 1:0] <= node_out[THIRD_LAYER - 1:0];
 		for(int i = THIRD_LAYER; i < IMAGE_SIZE; i++) begin
-			ANN_pipeline_register[i] <= 0;
+			nxt_ANN_pipeline_register[i] <= 0;
 		end
 	end
 	//else keep the regsiter the same
 	else begin
-		ANN_pipeline_register <= ANN_pipeline_register;
-	end*/
+		nxt_ANN_pipeline_register <= ANN_pipeline_register;
+	end
 end
 
 

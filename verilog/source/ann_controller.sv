@@ -14,7 +14,7 @@
 module ann_controller
 #(
 	parameter FIRST_LAYER = 16,
-	parameter SECOND_LAYER = 4,
+	parameter SECOND_LAYER = 8,
 	parameter THIRD_LAYER = 10,
 
 	parameter IMAGE_SIZE = 64		
