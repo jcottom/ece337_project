@@ -13,7 +13,7 @@ module ANN
 	parameter SECOND_LAYER = 8,
 	parameter THIRD_LAYER = 10,
 
-	parameter IMAGE_SIZE = 16
+	parameter IMAGE_SIZE = 64
 )
 (
 	input wire clk,

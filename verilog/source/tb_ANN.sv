@@ -10,13 +10,13 @@
 
 module tb_ANN
 ();		
-	parameter  IMAGE_FILE   = "./image.txt";
-	parameter  COEF_FILE    = "./coef.txt";	
+	parameter  IMAGE_FILE   = "../python/testcases8x8/t9in_fixbin.txt";
+	parameter  COEF_FILE    = "../python/shapeWeights8x8_bin.txt";	
 	int image_file;
 	int coef_file;
 	reg [7:0] temp;
 
-	parameter IMAGE_SIZE = 16;
+	parameter IMAGE_SIZE = 64;
 
 	localparam CLK_PERIOD = 10.0ns;	
 
@@ -93,10 +93,10 @@ module tb_ANN
 	task load_coef_first;
 	begin
 		//read the first layer coefficients
-		for(int i = 0; i < 16; i++) begin
-			for(int j = 0; j < IMAGE_SIZE; j++) begin
-				tb_weights[i][j][15:8] = $fgetc(coef_file);
-				tb_weights[i][j][7:0] = $fgetc(coef_file);
+		for(int i = 0; i < IMAGE_SIZE; i++) begin
+			for(int j = 0; j < 16; j++) begin
+				tb_weights[j][i][15:8] = $fgetc(coef_file);
+				tb_weights[j][i][7:0] = $fgetc(coef_file);
 			end			
 			
 		end
@@ -106,10 +106,10 @@ module tb_ANN
 	task load_coef_second;
 	begin
 		//read the second layer coefficents
-		for(int i = 0; i < 8; i++) begin
-			for(int j = 0; j < 16; j++) begin
-				tb_weights[i][j][15:8] = $fgetc(coef_file);
-				tb_weights[i][j][7:0] = $fgetc(coef_file);
+		for(int i = 0; i < 16; i++) begin
+			for(int j = 0; j < 8; j++) begin
+				tb_weights[j][i][15:8] = $fgetc(coef_file);
+				tb_weights[j][i][7:0] = $fgetc(coef_file);
 			end			
 			
 		end
@@ -119,10 +119,10 @@ module tb_ANN
 	task load_coef_third;
 	begin
 		//read the second layer coefficents
-		for(int i = 0; i < 10; i++) begin
-			for(int j = 0; j < 8; j++) begin
-				tb_weights[i][j][15:8] = $fgetc(coef_file);
-				tb_weights[i][j][7:0] = $fgetc(coef_file);
+		for(int i = 0; i < 8; i++) begin
+			for(int j = 0; j < 10; j++) begin
+				tb_weights[j][i][15:8] = $fgetc(coef_file);
+				tb_weights[j][i][7:0] = $fgetc(coef_file);
 			end			
 		end
 	end
@@ -139,24 +139,22 @@ module tb_ANN
 		coef_file = $fopen(COEF_FILE, "rb");
 	
 		//loads the 8x8 image		
-		//load_image_64();
+		load_image_64();
 
-		//load_coef_first();
 
 
 		//set initial conditions
 		tb_image_weights_loaded = 0;			
 		
-		reset();
 		
 		//sets the weights and image to a known value
-		for(int i = 0; i < 64; i++) begin
+		/*for(int i = 0; i < 64; i++) begin
 			//set the weights to 0			
 			for(int j = 0; j < 16; j++) begin
 				tb_weights[j][i] = 1;	
 			end
 			tb_image[i] = 1;  //set the image to 0
-		end		
+		end	*/	
 
 		//reset everything		
 		reset();
@@ -170,6 +168,18 @@ module tb_ANN
 		
 		
 	for(int j = 0; j < 4; j++) begin
+		
+		$error("j = %d", j);
+		if(j == 1) begin
+			load_coef_first();
+		end
+		else if(j == 2) begin
+			load_coef_second();
+		end 
+		else if(j == 3) begin
+			load_coef_third();
+		end
+
 		wait_coef_request();
 	
 		for(int i = 0; i < 3; i++) begin
