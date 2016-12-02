@@ -35,7 +35,7 @@ module tb_neural_to_seven
 	 );
 
     initial begin
-	//initialize
+	//tb_seven_seg is organized as: hgfedcba		h is dot?
 	@(negedge tb_clk);	//8x8 testcase 1 out
 	tb_neural_out[0] = 16'b0000011111110010;	//0000 0111 1111 0010
 	tb_neural_out[1] = 16'b0000000110111011;
@@ -48,6 +48,9 @@ module tb_neural_to_seven
 	tb_neural_out[8] = 16'b0000000000011111;
 	tb_neural_out[9] = 16'b0000000000010111;
 	@(negedge tb_clk);
+	if (tb_seven_seg == 8'h3f) begin
+	    $info("testcase 1 passed");
+        end
 	@(negedge tb_clk);
 	@(negedge tb_clk);	//8x8 testcase 2 out
 	tb_neural_out[0] = 16'b0000000011000101;	
@@ -61,6 +64,9 @@ module tb_neural_to_seven
 	tb_neural_out[8] = 16'b0000000000101010;
 	tb_neural_out[9] = 16'b0000000011101001;
 	@(negedge tb_clk);
+	if (tb_seven_seg == 8'h66) begin
+	    $info("testcase 2 passed");
+        end
 	@(negedge tb_clk);
 	@(negedge tb_clk);
 	tb_neural_out[0] = 16'b0000000111110010;	
@@ -74,6 +80,9 @@ module tb_neural_to_seven
 	tb_neural_out[8] = 16'b0000000000011111;
 	tb_neural_out[9] = 16'b0000000000010111;
 	@(negedge tb_clk);
+	if (tb_seven_seg == 8'h00) begin
+	    $info("testcase 3 passed");
+        end
 
 
     end
