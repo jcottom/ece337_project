@@ -53,7 +53,7 @@ always_comb begin
     end
 
 	//gfebcda
-    case (i)
+    /*case (i)
 	4'b0000: seven = 8'h3F;
 	4'b0001: seven = 8'h06;
 	4'b0010: seven = 8'h5b;
@@ -65,7 +65,9 @@ always_comb begin
 	4'b1000: seven = 8'h7F;
 	4'b1001: seven = 8'h6F;
 	default: seven = 8'h00;
-    endcase
+    endcase*/
+	seven = i;
+
 end
 
 

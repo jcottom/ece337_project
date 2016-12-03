@@ -18,7 +18,7 @@ module tb_ANN
 
 	parameter IMAGE_SIZE = 64;
 
-	localparam CLK_PERIOD = 10.0ns;	
+	localparam CLK_PERIOD = 100.0ns;	
 
 	//test bench values
 	reg tb_clk; 
@@ -77,6 +77,8 @@ module tb_ANN
 			tb_image[i][7:0] = $fgetc(image_file);
 		end
 	end
+	@(posedge tb_clk);
+	
 	endtask
 
 	task load_image_16;	
@@ -86,7 +88,6 @@ module tb_ANN
 			tb_image[i][15:8] = $fgetc(image_file);
 			tb_image[i][7:0] = $fgetc(image_file);
 		end
-		
 	end
 	endtask
 
@@ -97,8 +98,8 @@ module tb_ANN
 			for(int j = 0; j < 16; j++) begin
 				tb_weights[j][i][15:8] = $fgetc(coef_file);
 				tb_weights[j][i][7:0] = $fgetc(coef_file);
+				//@(posedge tb_clk);
 			end			
-			
 		end
 	end
 	endtask
@@ -110,8 +111,8 @@ module tb_ANN
 			for(int j = 0; j < 8; j++) begin
 				tb_weights[j][i][15:8] = $fgetc(coef_file);
 				tb_weights[j][i][7:0] = $fgetc(coef_file);
+				//@(posedge tb_clk);
 			end			
-			
 		end
 	end
 	endtask
@@ -123,6 +124,7 @@ module tb_ANN
 			for(int j = 0; j < 10; j++) begin
 				tb_weights[j][i][15:8] = $fgetc(coef_file);
 				tb_weights[j][i][7:0] = $fgetc(coef_file);
+				//@(posedge tb_clk);
 			end			
 		end
 	end

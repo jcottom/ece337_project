@@ -16,7 +16,7 @@ include /home/ecegrid/a/ece337/Course_Prod/course_make_vars
 # (do not include the source folder in the name)
 # NOTE: YOU WILL NEED TO SET THIS VARIABLE'S VALUE WHEN WORKING WITH HEIRARCHICAL DESIGNS
 # AND THE AUTOMATED GRADING SYSTEM
-COMPONENT_FILES	:= flex_counter.sv input_node_timer.sv ann_controller.sv node.sv activation.sv fixed_point_add.sv fixed_point_mult.sv
+COMPONENT_FILES	:= flex_counter.sv input_node_timer.sv ann_controller.sv node.sv activation.sv fixed_point_add.sv fixed_point_mult.sv neural_to_seven.sv
 
 # Specify the name of the top level file (do not include the source folder in the name)
 # NOTE: YOU WILL NEED TO SET THIS VARIABLE'S VALUE WHEN WORKING WITH HEIRARCHICAL DESIGNS

@@ -33,7 +33,7 @@ module ann_controller
    	output reg coef_select
 );
 
-typedef enum bit [2:0] {WAIT_IMAGE, REQUEST_COEF, WAIT_COEF, START_LAYER, WAIT_LAYER, INCR_LAYER, CHECK_DONE, DISPLAY_OUT} all_states;
+typedef enum bit [3:0] {IDLE, LOAD_IMAGE, REQUEST_COEF, WAIT_COEF, START_LAYER, WAIT_LAYER, INCR_LAYER, CHECK_DONE, DISPLAY_OUT, PAUSE_COEF} all_states;
 
 
 
@@ -46,13 +46,14 @@ reg [2:0] nxt_layer;
 
 localparam max_layers = 3;
 
+localparam input_delay = 1;
 
 
 always_ff @ (posedge clk, negedge n_rst)
 begin
 	//reset	
 	if(n_rst == 1'b0) begin
-		state <= WAIT_IMAGE;
+		state <= IDLE;
 		cur_layer <= 0;
 	end
 	else begin
@@ -65,16 +66,23 @@ always_comb begin
 	
 	nxt_state = state; //preset the next state to be the current state
 	case(state)
-		WAIT_IMAGE: begin
+		IDLE : begin
 			if(image_weights_loaded == 1'b1)
-				nxt_state = REQUEST_COEF;
+				nxt_state = LOAD_IMAGE;		
+		end
+		LOAD_IMAGE: begin
+			nxt_state = REQUEST_COEF;
 		end
 		REQUEST_COEF: begin
 			nxt_state = WAIT_COEF;
 		end
 		WAIT_COEF: begin
 			if(image_weights_loaded == 1'b1)
-				nxt_state = START_LAYER;
+				nxt_state = PAUSE_COEF;
+				//nxt_state = START_LAYER;
+		end
+		PAUSE_COEF: begin
+			nxt_state = START_LAYER;
 		end
 		START_LAYER: begin
 			nxt_state = WAIT_LAYER;
@@ -93,18 +101,18 @@ always_comb begin
 				nxt_state = REQUEST_COEF;
 		end
 		DISPLAY_OUT: begin
-			nxt_state = WAIT_IMAGE;
+			nxt_state = IDLE;
 		end
 	endcase
 	
 	if(cur_layer == 0) begin
-		max_input = IMAGE_SIZE;
+		max_input = IMAGE_SIZE + input_delay;
 	end 
 	else if(cur_layer == 1) begin
-		max_input = FIRST_LAYER;
+		max_input = FIRST_LAYER + input_delay;
 	end
 	else begin
-		max_input = SECOND_LAYER;
+		max_input = SECOND_LAYER + input_delay;
 	end
 
 	//max_input = 16;  //make this max input based on a look up table
@@ -117,7 +125,10 @@ always_comb begin
 	nxt_layer = cur_layer;
 	
 	case(state)
-		WAIT_IMAGE: begin
+		IDLE: begin
+			coeff_ready = 0;
+		end		
+		LOAD_IMAGE: begin
 			load_next = 4;	
 			//wait for image to load
 			coeff_ready = 0;
@@ -128,6 +139,9 @@ always_comb begin
 			//coef_select = ???
 		end
 		WAIT_COEF: begin
+			coeff_ready = 0;
+		end
+		PAUSE_COEF: begin
 			coeff_ready = 0;
 		end
 		START_LAYER: begin
