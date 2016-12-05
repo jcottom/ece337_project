@@ -15,8 +15,8 @@ module sram_ann
 	input request,
 	input p_done,
 	input [31:0] read_data,
-	input start_address;
-	output address,
+	input [9:0] start_address;
+	output [9:0] address,
 	output read
 );
 
