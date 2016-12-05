@@ -10,7 +10,7 @@ module sram_buffer
 (
 	input wire clk,
 	input wire n_rst,
-	input sram_data,
+	input [31:0] sram_data,
 	input sram_done,
 	input start_sram,
 	output [15:0] image [63:0],
