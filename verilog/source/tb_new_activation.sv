@@ -20,7 +20,9 @@ module tb_new_activation();
    logic [16:0] num_passes;
    logic [16:0] num_failures;
 
-   activation DUT (tb_in, tb_out);
+	reg [4:0] tb_state;
+
+   new_activation DUT (tb_in, tb_out, tb_state);
 
    // Clock generation
    always begin
@@ -31,34 +33,10 @@ module tb_new_activation();
    end
 
    initial begin : test
-      num_passes = 0;
-      num_failures = 0;
-
-      file = $fopen("../python/lut.pat", "r");
-      if(!file) disable test;
-
-      while (!$feof(file)) begin
-         // Wait until start of clock cycle
-         @(posedge tb_clk);
-
-         // Read in test input and expected output
-         r = $fscanf(file, "%b %b\n", tb_in, tb_expected);
-
-         // Wait half a clock cycle
-         #(CLK_PERIOD/2);
-
-         // Assert output
-         assert(tb_out == tb_expected) begin
-            $display("Test case PASSED: sigmoid(%b) = %b", tb_in, tb_out);
-            num_passes = num_passes + 1;
-         end else begin
-            $error("Test case FAILED: sigmoid(%d) = %d != %d", tb_in, tb_expected, tb_out);
-            num_failures = num_failures + 1;
-         end
-      end // while (!$feof(file))
-
-      $display("%d/%d test cases passed", num_passes, NUM_TESTCASES);
-      $display("%d/%d test cases failed", num_failures, NUM_TESTCASES);
+      for(int i = 0; i < 65500; i++) begin
+			tb_in = i;
+			@(posedge tb_clk);
+	end
    end // block: test
 
 endmodule // tb_activation

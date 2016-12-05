@@ -1,5 +1,5 @@
 # Step 1:  Read in the source file
-analyze -format sverilog -lib WORK {flex_counter.sv input_node_timer.sv ann_controller.sv node.sv activation.sv fixed_point_add.sv fixed_point_mult.sv neural_to_seven.sv sync_low.sv ANN.sv}
+analyze -format sverilog -lib WORK {flex_counter.sv input_node_timer.sv ann_controller.sv node.sv activation.sv fixed_point_add.sv fixed_point_mult.sv neural_to_seven.sv sync_low.sv new_activation.sv ANN.sv}
 elaborate ANN -lib WORK
 uniquify
 # Step 2: Set design constraints

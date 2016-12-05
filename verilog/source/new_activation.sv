@@ -22,48 +22,115 @@
  need to generate a new ece337_project/python/lut.pat using the same scaling
  factor, which is used by the tb_activation module.
  */
-module activation(
+module new_activation(
                   input wire [15:0]  in,
-                  output wire [15:0] out
+                  output reg [15:0] out,
+					output reg[4:0] state
                   );
-
-   
+	
+	reg [15:0] temp_out;
+	
 	always_comb begin
-		//if X > 5
-		if(in > 16'h5000) begin
-			//y = 1
-			out = 16'1000;
+
+		//if positive
+		if(in[15] == 1'b0) begin
+			//if X > 5
+			if(in > 16'h0500) begin
+				//y = 1
+				temp_out = 16'h0100;
+				state = 0;
+			end
+			//else if x > 2.375
+			else if(in > 16'h02A0) begin
+				// y = 0.03125 * x + 0.84375
+				temp_out = {5'b0, in[15:5]} + 16'b0000000011011000;
+				state = 1;
+			end
+			//else if x > 1
+			else if(in > 16'h0100) begin
+				// y = 0.125 * x + 0.625
+				temp_out = {3'b0, in[15:3]} + 16'b0000000010100000;	
+				state = 2;
+			end
+			//else if x > 0
+			else begin
+				//y = 0.25 * x + 0.5
+				temp_out = {2'b0, in[15:2]} + 16'b0000000010000000;
+				state = 7;
+			end
+				
 		end
-		//else if x > 2.375
-		else if(x > 16'h2A00) begin
-			// y = 0.03125 * x + 0.84375
-			
-		end
-		//else if x > 1
-		else if(x > 16'h1000) begin
-			// y = 0.125 * x + 0.625
-			
-		end
-		//else if x > -1
-		else if(x > 16'h9000) begin
-			//y = 0.25 * x + 0.5
-		end
-		//else if x > -2.375
-		else if(x > 16'hAA00) begin
-			//y = 0.125 * x + 0.375
-		end
-		//else if x > -5
-		else if(x > 16'hD000) begin
-			//y = 0.03125 * x + 0.15625
-		end
-		//else
 		else begin
-			//y = 0
-			out = 0;
-		end
-			
-	end
+			//if X < -5
+			if(in[14:0] > 16'h0500) begin
+				//y = 0
+				temp_out = 0;
+				state = 6;
+			end
+			//else if x > -5
+			else if(in[14:0] > 16'h02A0) begin
+				//y = 0.03125 * x + 0.15625
+				temp_out = 16'b0000000000101000 - {6'b0, in[14:5]};
+				state = 5;
+			end
+			//else if x > -2.375
+			else if(in[14:0] > 16'h0100) begin
+				//y = 0.125 * x + 0.375
+				temp_out = 16'b0000000001100000 - {4'b0, in[14:3]};
+				state = 4;
+			end
+			//else if x > -1
+			else begin
+				//y = 0.25 * x + 0.5
+				temp_out = 16'b0000000010000000 - {3'b0, in[14:2]};
+				state = 3;
+			end
 
+		end	
+end
 
+assign out = temp_out << 4;
 
 endmodule // activation
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			//else if x > -1
+			/*if(in > 16'h9000) begin
+				//y = 0.25 * x + 0.5
+				out = 16'b0000100000000000 - {2'b0, in[13:0]};
+				state = 3;
+			end
+			//else if x < -2.375
+			else if(in > 16'hAA00) begin
+				//y = 0.125 * x + 0.375
+				out = 16'b0000011000000000 - {3'b0, in[12:0]};
+				state = 4;
+			end
+			//else if x > -5
+			else if(in > 16'hD000) begin
+				//y = 0.03125 * x + 0.15625
+				out = 16'b0000001010000000 - {5'b0, in[10:0]};
+				state = 5;
+			end
+			//else
+			else begin
+				//y = 0
+				out = 0;
+				state = 6;
+			end	*/

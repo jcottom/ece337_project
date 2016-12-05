@@ -81,8 +81,7 @@ begin
 			ANN_pipeline_register[i] <= 0;
 			node_out[i] <= 0;
 		end	
-		done_processing <= 0;
-
+		done_processing <= 0;	
 	end 
 	else begin
 		ANN_pipeline_register <= nxt_ANN_pipeline_register;

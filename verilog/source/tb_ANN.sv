@@ -10,7 +10,7 @@
 
 module tb_ANN
 ();		
-	parameter  IMAGE_FILE   = "../python/testcases8x8/t1in_fixbin.txt";
+	parameter  IMAGE_FILE   = "../python/testcases8x8/t4in_fixbin.txt";
 	parameter  COEF_FILE    = "../python/shapeWeights8x8_bin.txt";	
 	int image_file;
 	int coef_file;
@@ -18,7 +18,7 @@ module tb_ANN
 
 	parameter IMAGE_SIZE = 64;
 
-	localparam CLK_PERIOD = 15.0ns;	
+	localparam CLK_PERIOD = 30.0ns;	
 
 	//test bench values
 	reg tb_clk; 
