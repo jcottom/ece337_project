@@ -10,7 +10,7 @@
 
 module tb_ANN
 ();		
-	parameter  IMAGE_FILE   = "../python/testcases8x8/t9in_fixbin.txt";
+	parameter  IMAGE_FILE   = "../python/testcases8x8/t1in_fixbin.txt";
 	parameter  COEF_FILE    = "../python/shapeWeights8x8_bin.txt";	
 	int image_file;
 	int coef_file;
@@ -18,7 +18,7 @@ module tb_ANN
 
 	parameter IMAGE_SIZE = 64;
 
-	localparam CLK_PERIOD = 100.0ns;	
+	localparam CLK_PERIOD = 15.0ns;	
 
 	//test bench values
 	reg tb_clk; 
@@ -26,12 +26,16 @@ module tb_ANN
 	reg tb_image_weights_loaded;
 	reg [15:0] tb_image [IMAGE_SIZE - 1:0];
 	reg [15:0] tb_weights [15:0][IMAGE_SIZE - 1:0];
+
+
+
 	reg tb_done_processing;
 	reg tb_request_coef;
 	reg tb_coef_select;
 	reg [7:0] tb_seven_seg;
+	reg [15:0] tb_ANN_pipeline_register [IMAGE_SIZE - 1:0];
 
-	ANN  dut(.clk(tb_clk),.n_rst(tb_n_rst),.image_weights_loaded(tb_image_weights_loaded),.image(tb_image),.weights(tb_weights),.done_processing(tb_done_processing),.request_coef(tb_request_coef),.coef_select(tb_coef_select),.seven_seg(tb_seven_seg));
+	ANN  dut(.clk(tb_clk),.n_rst(tb_n_rst),.image_weights_loaded(tb_image_weights_loaded),.image(tb_image),.weights(tb_weights),.done_processing(tb_done_processing),.request_coef(tb_request_coef),.coef_select(tb_coef_select),.seven_seg(tb_seven_seg), .ANN_pipeline_register(tb_ANN_pipeline_register));
 	
 	// Clock gen block
 	always
@@ -73,8 +77,8 @@ module tb_ANN
 	begin
 		//read 64 short integers
 		for(int i = 0; i < IMAGE_SIZE; i++) begin
-			tb_image[i][15:8] = $fgetc(image_file); 
-			tb_image[i][7:0] = $fgetc(image_file);
+			tb_image[i][15:8] <= $fgetc(image_file); 
+			tb_image[i][7:0] <= $fgetc(image_file);
 		end
 	end
 	@(posedge tb_clk);
@@ -85,10 +89,12 @@ module tb_ANN
 	begin
 		//read 16 short integers
 		for(int i = 0; i < 16; i++) begin
-			tb_image[i][15:8] = $fgetc(image_file);
-			tb_image[i][7:0] = $fgetc(image_file);
+			tb_image[i][15:8] <= $fgetc(image_file); 
+			tb_image[i][7:0] <= $fgetc(image_file); 
 		end
 	end
+	@(posedge tb_clk);
+
 	endtask
 
 	task load_coef_first;
@@ -96,12 +102,13 @@ module tb_ANN
 		//read the first layer coefficients
 		for(int i = 0; i < IMAGE_SIZE; i++) begin
 			for(int j = 0; j < 16; j++) begin
-				tb_weights[j][i][15:8] = $fgetc(coef_file);
-				tb_weights[j][i][7:0] = $fgetc(coef_file);
-				//@(posedge tb_clk);
+				tb_weights[j][i][15:8] = $fgetc(coef_file); 
+				tb_weights[j][i][7:0] = $fgetc(coef_file); 
 			end			
 		end
 	end
+	@(posedge tb_clk);
+
 	endtask
 
 	task load_coef_second;
@@ -109,11 +116,12 @@ module tb_ANN
 		//read the second layer coefficents
 		for(int i = 0; i < 16; i++) begin
 			for(int j = 0; j < 8; j++) begin
-				tb_weights[j][i][15:8] = $fgetc(coef_file);
-				tb_weights[j][i][7:0] = $fgetc(coef_file);
-				//@(posedge tb_clk);
+				tb_weights[j][i][15:8] = $fgetc(coef_file); 
+				tb_weights[j][i][7:0] = $fgetc(coef_file); 
 			end			
 		end
+	@(posedge tb_clk);
+
 	end
 	endtask
 
@@ -122,11 +130,12 @@ module tb_ANN
 		//read the second layer coefficents
 		for(int i = 0; i < 8; i++) begin
 			for(int j = 0; j < 10; j++) begin
-				tb_weights[j][i][15:8] = $fgetc(coef_file);
-				tb_weights[j][i][7:0] = $fgetc(coef_file);
-				//@(posedge tb_clk);
+				tb_weights[j][i][15:8] <= $fgetc(coef_file); 	
+				tb_weights[j][i][7:0] <= $fgetc(coef_file); 
 			end			
 		end
+	@(posedge tb_clk);
+	
 	end
 	endtask
 
@@ -143,20 +152,15 @@ module tb_ANN
 		//loads the 8x8 image		
 		load_image_64();
 
-
-
+		for(int i = 0; i < IMAGE_SIZE; i++) begin
+			for(int j = 0; j < 16; j++) begin
+				tb_weights[j][i] = 0;
+			end			
+		end
+		
 		//set initial conditions
 		tb_image_weights_loaded = 0;			
-		
-		
-		//sets the weights and image to a known value
-		/*for(int i = 0; i < 64; i++) begin
-			//set the weights to 0			
-			for(int j = 0; j < 16; j++) begin
-				tb_weights[j][i] = 1;	
-			end
-			tb_image[i] = 1;  //set the image to 0
-		end	*/	
+			
 
 		//reset everything		
 		reset();
@@ -171,6 +175,8 @@ module tb_ANN
 		
 	for(int j = 0; j < 4; j++) begin
 		
+		@(negedge tb_clk);
+
 		$error("j = %d", j);
 		if(j == 1) begin
 			load_coef_first();

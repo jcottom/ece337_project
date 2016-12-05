@@ -38,6 +38,9 @@ module node
 	reg [31:0] sum;
 	reg [31:0] nxt_out;
 	reg [15:0] nxt_node_out;
+
+	reg [15:0] nxt_coef;
+	reg [15:0] nxt_data;
 	
 
 //create instance of the activatin funciton
@@ -47,12 +50,16 @@ module node
 		if(n_rst == 0) begin
 			//node_out <= 0;
 			add2 <= 0;
-			add1 <= 0;
+			nxt_coef <= 0;
+			nxt_data <= 0;
 		end  
 		else begin
 			//node_out <= nxt_node_out;
 			add2 <= nxt_out;
-			add1 <= nxt_add1;
+			//add1 <= nxt_add1;
+			nxt_coef <= coef[cnt_val];
+			nxt_data <= data_in[cnt_val];
+
 			
 		end
 	end
@@ -69,7 +76,9 @@ module node
 		end
 	end
 
-	fixed_point_mult mult(.a(coef[cnt_val]), .b(data_in[cnt_val]), .result(nxt_add1)); 
+	//fixed_point_mult mult(.a(coef[cnt_val]), .b(data_in[cnt_val]), .result(nxt_add1));
+	fixed_point_mult mult(.a(coef[cnt_val]), .b(data_in[cnt_val]), .result(add1));
+	//fixed_point_mult mult(.a(nxt_coef), .b(nxt_data), .result(nxt_add1)); 
 	fixed_point_add  add(.a(add2), .b(add1), .result(sum)); //sum = add1 + add2
 	activation       active(.in(add2[31:16]) ,.out(node_out));
 

@@ -46,7 +46,7 @@ reg [2:0] nxt_layer;
 
 localparam max_layers = 3;
 
-localparam input_delay = 1;
+localparam input_delay = 0;
 
 
 always_ff @ (posedge clk, negedge n_rst)

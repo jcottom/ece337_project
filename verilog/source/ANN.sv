@@ -24,8 +24,10 @@ module ANN
 	output reg done_processing,
 	output reg request_coef,
 	output reg coef_select,
-	output reg [7:0] seven_seg
+	output reg [7:0] seven_seg,
+	output reg [15:0] ANN_pipeline_register [IMAGE_SIZE - 1:0]
 );
+
 
 //variables to link the different modules together
 reg [6:0] max_input;
@@ -36,7 +38,7 @@ reg [2:0] load_next;
 reg n_start_done;
 
 //register variables
-reg [15:0] ANN_pipeline_register [IMAGE_SIZE - 1:0];
+//reg [15:0] ANN_pipeline_register [IMAGE_SIZE - 1:0];
 reg [15:0] nxt_ANN_pipeline_register [IMAGE_SIZE - 1:0];
 
 //output from the nodes variables
