@@ -16,6 +16,8 @@ module sram_buffer
 	output [15:0] image [63:0],
 	output [15:0] weights [1023:0]
 );
+	integer i, j;
+	
 	always @ (posedge clk, negedge n_rst) begin
 		if (!n_rst) begin
 			for (i = 0; i < 64; i = i + 1) begin
@@ -25,7 +27,18 @@ module sram_buffer
 				weights[j] = 'b0;
 			end
 		end
+		else if (sram_done) begin
+			for( i = 0; i < 64; i = i + 1) begin
+				image[i] = sram[i];
+			end
+		else begin
+			for ( i = 0; i < 64; i = i + 1) begin
+				weights[j] = sram[i];
+			end
+		end
 	end
+	
+
 	
 
 endmodule
