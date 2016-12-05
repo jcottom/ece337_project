@@ -27,7 +27,9 @@ module sram_buffer
 				weights[j] = 'b0;
 			end
 		end
-		else if (sram_done) begin
+	end 
+	always @ (start_sram) begin
+		if (!sram_done) begin
 			for( i = 0; i < 64; i = i + 1) begin
 				image[i] = sram[i];
 			end
