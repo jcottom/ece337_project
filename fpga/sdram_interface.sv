@@ -25,25 +25,6 @@ module sdram_interface #(
     input wire [NUMLAYERS-1:0]             layer, // Specifies which layer to retrieve
     output wire [IMSIZE*8-1:0]             image_data_o,
     output wire [CSIZE*8-1:0]              coeff_data_o,
-   /*
-    output wire [64*8-1:0]                 image_data_o, // Contains all 64 pixels of image data
-    output reg [128*8-1:0]                 coeff_data_0, // Contains all coefficients for requested layer
-    output reg [128*8-1:0]                 coeff_data_1, // Contains all coefficients for requested layer
-    output reg [128*8-1:0]                 coeff_data_2, // Contains all coefficients for requested layer
-    output reg [128*8-1:0]                 coeff_data_3, // Contains all coefficients for requested layer
-    output reg [128*8-1:0]                 coeff_data_4, // Contains all coefficients for requested layer
-    output reg [128*8-1:0]                 coeff_data_5, // Contains all coefficients for requested layer
-    output reg [128*8-1:0]                 coeff_data_6, // Contains all coefficients for requested layer
-    output reg [128*8-1:0]                 coeff_data_7, // Contains all coefficients for requested layer
-    output reg [128*8-1:0]                 coeff_data_8, // Contains all coefficients for requested layer
-    output reg [128*8-1:0]                 coeff_data_9, // Contains all coefficients for requested layer
-    output reg [128*8-1:0]                 coeff_data_10, // Contains all coefficients for requested layer
-    output reg [128*8-1:0]                 coeff_data_11, // Contains all coefficients for requested layer
-    output reg [128*8-1:0]                 coeff_data_12, // Contains all coefficients for requested layer
-    output reg [128*8-1:0]                 coeff_data_13, // Contains all coefficients for requested layer
-    output reg [128*8-1:0]                 coeff_data_14, // Contains all coefficients for requested layer
-    output reg [128*8-1:0]                 coeff_data_15, // Contains all coefficients for requested layer
-   */
     output reg                             busy, // Set high when reading data
 
     // Bus Master Interface
