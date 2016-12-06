@@ -8,7 +8,10 @@ module sdram_interface #(
                          parameter REGWIDTH = 32,       		// Data Width for the Internal Registers. Default 32 bits
 
                          // My additions
+                         parameter IMSIZE = 64,
                          parameter IMBITS = 6,
+                         parameter CSIZE = 2048, // number of bytes for max layer
+                         parameter CPORTSIZE = CSIZE/16,
                          parameter CBITS = 11,
                          parameter NUMLAYERS = 2     // ciel( log2( number of layers in network = 3 ) )
                          )
@@ -20,6 +23,9 @@ module sdram_interface #(
     input wire                             get_image, // Pulsed high when an image is needed
     input wire                             get_coeffs, // Pulsed high when layer coefficients are needed
     input wire [NUMLAYERS-1:0]             layer, // Specifies which layer to retrieve
+    output wire [IMSIZE*8-1:0]             image_data_o,
+    output wire [CSIZE*8-1:0]              coeff_data_o,
+   /*
     output wire [64*8-1:0]                 image_data_o, // Contains all 64 pixels of image data
     output reg [128*8-1:0]                 coeff_data_0, // Contains all coefficients for requested layer
     output reg [128*8-1:0]                 coeff_data_1, // Contains all coefficients for requested layer
@@ -37,6 +43,7 @@ module sdram_interface #(
     output reg [128*8-1:0]                 coeff_data_13, // Contains all coefficients for requested layer
     output reg [128*8-1:0]                 coeff_data_14, // Contains all coefficients for requested layer
     output reg [128*8-1:0]                 coeff_data_15, // Contains all coefficients for requested layer
+   */
     output reg                             busy, // Set high when reading data
 
     // Bus Master Interface
@@ -52,13 +59,13 @@ module sdram_interface #(
     //output reg [MAXREAD-1:0]               master_burstcount, There doesn't appear to be burst capability on the SDRAM controller, which is a shame.
 
     );
-   localparam IMSIZE = 64;      // Size of input image (8x8 pixels)
+   //localparam IMSIZE = 64;      // Size of input image (8x8 pixels)
    localparam L0SIZE = 64*16*2; // Number of coefficients in layer 0 times size of coefficient
    localparam L1SIZE = 16*4*2;  // Size of layer 1 coefficients
    localparam L2SIZE = 4*10*2;  // Size of layer 2 coefficients
 
-   logic [IMBITS-1:0][7:0]                 image_data;
-   logic [CBITS-1:0][7:0]                  coeff_data;
+   logic [IMSIZE-1:0][7:0]                 image_data;
+   logic [CSIZE-1:0][7:0]                  coeff_data;
 
 
    localparam START_BYTE = 32'hF00BF00B;
@@ -78,8 +85,8 @@ module sdram_interface #(
    state_t state, nextState;
 
    assign image_data_o = image_data;
-   //assign coeff_data_o = coeff_data;
-   assign {coeff_data_0, coeff_data_1, coeff_data_2, coeff_data_3, coeff_data_4, coeff_data_5, coeff_data_6, coeff_data_7, coeff_data_8, coeff_data_9, coeff_data_10, coeff_data_11, coeff_data_12, coeff_data_13, coeff_data_14, coeff_data_15} = coeff_data;
+   assign coeff_data_o = coeff_data;
+   //assign {coeff_data_0, coeff_data_1, coeff_data_2, coeff_data_3, coeff_data_4, coeff_data_5, coeff_data_6, coeff_data_7, coeff_data_8, coeff_data_9, coeff_data_10, coeff_data_11, coeff_data_12, coeff_data_13, coeff_data_14, coeff_data_15} = coeff_data;
 
    // Master Side
 
@@ -138,7 +145,7 @@ module sdram_interface #(
            if (reg_index >= IMSIZE) begin
               nextState = IDLE;
            end else begin
-              if (!master_waitrequest) begin
+              if (!master_waitrequest && address < SDRAM_ADDR + IMSIZE) begin
                  nextAddress = address + 1;
               end
               if (master_readdatavalid) begin
@@ -151,7 +158,7 @@ module sdram_interface #(
            if (reg_index >= L0SIZE) begin
               nextState = IDLE;
            end else begin
-              if (!master_waitrequest) begin
+              if (!master_waitrequest && address < SDRAM_ADDR + L0SIZE) begin
                  nextAddress = address + 1;
               end
               if (master_readdatavalid) begin
@@ -164,7 +171,7 @@ module sdram_interface #(
            if (reg_index >= L1SIZE) begin
               nextState = IDLE;
            end else begin
-              if (!master_waitrequest) begin
+              if (!master_waitrequest && address < SDRAM_ADDR + L1SIZE) begin
                  nextAddress = address + 1;
               end
               if (master_readdatavalid) begin
@@ -177,7 +184,7 @@ module sdram_interface #(
            if (reg_index >= L2SIZE) begin
               nextState = IDLE;
            end else begin
-              if (!master_waitrequest) begin
+              if (!master_waitrequest && address < SDRAM_ADDR + L2SIZE) begin
                  nextAddress = address + 1;
               end
               if (master_readdatavalid) begin
@@ -207,32 +214,32 @@ module sdram_interface #(
               master_read = 0;
            end else begin
               master_read = 1;
+              master_address = address;
            end
-           master_address = address;
         end
         L0READ : begin
            if( address >= SDRAM_ADDR + IMSIZE + L0SIZE) begin
               master_read = 0;
            end else begin
               master_read = 1;
+              master_address = address;
            end
-           master_address = address;
         end
         L1READ : begin
            if( address >= SDRAM_ADDR + IMSIZE + L0SIZE + L1SIZE) begin
               master_read = 0;
            end else begin
               master_read = 1;
+              master_address = address;
            end
-           master_address = address;
         end
         L2READ : begin
            if( address >= SDRAM_ADDR + IMSIZE + L0SIZE + L1SIZE + L2SIZE) begin
               master_read = 0;
            end else begin
               master_read = 1;
+              master_address = address;
            end
-           master_address = address;
         end
       endcase
    end

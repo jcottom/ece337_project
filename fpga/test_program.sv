@@ -4,9 +4,9 @@
 `define NUM_MASTERS  1
 `define NUM_SLAVES   1
 
-`define TB        $root.tb.dut
-`define MASTER0   $root.tb.dut.u0.mm_master_bfm_0
-`define SLAVE0    $root.tb.dut.u0.mm_slave_bfm_0
+`define TB         $root.tb
+`define MASTER0    $root.tb.dut.u0.mm_master_bfm_0
+`define SLAVE0     $root.tb.dut.u0.mm_slave_bfm_0
 
 module test_program ();
 
@@ -19,11 +19,11 @@ module test_program ();
    localparam ADDR_W                   = 12;
 
    localparam SYMBOL_W                 = 8;
-   localparam NUM_SYMBOLS              = 4;
+   localparam NUM_SYMBOLS              = 1;
    localparam DATA_W                   = NUM_SYMBOLS * SYMBOL_W;
 
-   localparam BURST_W                  = 4;
-   localparam MAX_BURST                = 8;
+   localparam BURST_W                  = 1;
+   localparam MAX_BURST                = 1;
 
    localparam SLAVE_SPAN               = 32'h1F;
 
@@ -125,7 +125,7 @@ Response read_response_queue_slave[`NUM_SLAVES][$];
 \
       actual_cmd = get_command_from_slave_``SLAVE_ID(); \
       exp_cmd = get_expected_command_for_slave(actual_cmd, ``SLAVE_ID); \
-      verify_command(actual_cmd, exp_cmd); \
+      //verify_command(actual_cmd, exp_cmd); \
 \
       // set read response \
       if (actual_cmd.trans == READ) begin \
@@ -159,7 +159,7 @@ Response read_response_queue_slave[`NUM_SLAVES][$];
 
 `define MACRO_PENDING_READ_CYCLES(SLAVE_ID) \
    int pending_read_cycles_slave_``SLAVE_ID = 0; \
-   always @(posedge `TB.clock) begin \
+   always @(posedge `TB.clk) begin \
       if (pending_read_cycles_slave_``SLAVE_ID > 0) begin \
          pending_read_cycles_slave_``SLAVE_ID--; \
       end \
@@ -226,11 +226,11 @@ task automatic configure_and_push_response_to_slave_``SLAVE_ID ( \
 // Macro Instantiations
 //---------------------------------------------------
 // master 0
-`MACRO_CONFIGURE_AND_PUSH_COMMAND_TO_MASTER(0)
-`MACRO_MASTER_RESPONSE_THREAD(0)
-`MACRO_GET_READ_RESPONSE_FROM_MASTER(0)
+//`MACRO_CONFIGURE_AND_PUSH_COMMAND_TO_MASTER(0)
+//`MACRO_MASTER_RESPONSE_THREAD(0)
+//`MACRO_GET_READ_RESPONSE_FROM_MASTER(0)
 
-// slave 0
+// SLAVE_THREAD(0)
 `MACRO_SLAVE_THREAD(0)
 `MACRO_GET_COMMAND_FROM_SLAVE(0)
 `MACRO_PENDING_READ_CYCLES(0)
@@ -256,18 +256,31 @@ event assert_fail;
 
       set_verbosity(VERBOSITY_INFO);
       wait (`TB.reset_n == 1);
-      repeat(10) @(posedge `TB.clock);
+      repeat(10) @(posedge `TB.clk);
+
+      @(negedge `TB.clk)
+      `TB.tb_get_image = 1'b1;
+      @(negedge `TB.clk)
+      `TB.tb_get_image = 1'b0;
       $display("Starting master test program");
 
-      $display("Master sending out non bursting write commands");
-      master_send_commands(10, WRITE, NOBURST);
+      @(negedge `TB.tb_busy);
+      @(negedge `TB.clk);
+      `TB.tb_get_coeffs = 1'b1;
+      `TB.tb_layer = 2'h0;
+      @(negedge `TB.clk);
+      `TB.tb_get_coeffs = 1'b0;
 
-      $display("Master sending out non bursting read commands");
-      master_send_commands(10, READ, NOBURST);
 
-      $display("Master has sent out all commands");
+      //$display("Master sending out non bursting write commands");
+      //master_send_commands(10, WRITE, NOBURST);
 
-      tcmd = get_command_from_slave_0();
+      //$display("Master sending out non bursting read commands");
+      //master_send_commands(10, READ, NOBURST);
+
+      //$display("Master has sent out all commands");
+
+      //tcmd = get_command_from_slave_0();
    end
 
    task automatic master_send_commands (
@@ -387,7 +400,7 @@ event assert_fail;
       int      master_id
    );
       if (master_id == 0) begin
-         configure_and_push_command_to_master_0(cmd);
+         //configure_and_push_command_to_master_0(cmd);
       end
 
    endtask
@@ -478,6 +491,7 @@ event assert_fail;
       rsp.burstcount       = burstcount;
       for (int i = 0;i < burstcount; i++) begin
          rsp.data[i]       = $random;
+         $display("Random data: %h", rsp.data[i]);
          rsp.latency[i]    = $urandom_range(0, MAX_DATA_IDLE);
       end
 

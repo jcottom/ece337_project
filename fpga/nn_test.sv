@@ -4,8 +4,9 @@
  */
 module nn_test #(
                  parameter IMBITS = 6,
+                 parameter IMSIZE = 64,
                  parameter CBITS = 11,
-                 parameter CSIZE = 1024, // # of 16bit values
+                 parameter CSIZE = 2048, // # of 8bit values
                  parameter LBITS = 2
                  )(
                    // Clock
@@ -15,7 +16,7 @@ module nn_test #(
                    input wire                    get_image,
                    input wire [LBITS-1:0]        layer,
                    output wire                   busy,
-                   output wire [IMBITS-1:0][7:0] image_data,
+                   output wire [IMSIZE-1:0][7:0] image_data,
                    output wire [CSIZE-1:0][7:0]  coeff_data
                    );
 
@@ -28,6 +29,17 @@ module nn_test #(
    //display DISPLAY (4'h4, '{HEX0, HEX1, HEX2, HEX3, HEX4, HEX5, HEX6, HEX7});
 
    // Instantiate interface to SDRAM
+   verification_bus u0 (
+		                    .top_level_busy      (busy),
+		                    .top_level_get_image (get_image),
+		                    .top_level_layer     (layer),
+		                    .top_level_get_coeffs(get_coeffs),
+		                    .top_level_image_data(image_data),
+		                    .top_level_coeff_data(coeff_data),
+		                    .clk_clk             (clock),
+		                    .reset_reset_n       (reset_n)
+	                       );
+   /*
    verification_bus u0 (
                               .clk_clk                     (clock),                                  //                         clk.clk
                               .reset_reset_n               (reset_n),                            //                       reset.reset_n
@@ -55,4 +67,5 @@ module nn_test #(
                               .top_level_get_coeffs        (get_coeffs)         //                  .get_coeffs
                               );
 
+    */
 endmodule

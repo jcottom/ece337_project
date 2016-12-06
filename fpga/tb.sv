@@ -16,7 +16,7 @@ module tb ();
    reg [63:0][7:0]    tb_image_data;
    reg [1023:0][15:0] tb_coeff_data;
 
-   localparam  CLOCK_PERIOD            = 10; // Clock period in ns
+   localparam  CLOCK_PERIOD            = 20; // Clock period in ns
    localparam  INITIAL_RESET_CYCLES    = 20;  // Number of cycles to reset when simulation starts
 
    nn_test dut (clk, reset_n, tb_get_coeffs, tb_get_image, tb_layer, tb_busy, tb_image_data, tb_coeff_data);
