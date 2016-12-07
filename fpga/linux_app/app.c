@@ -15,6 +15,10 @@
 #define SDRAM 0x08000000	// This is the starting address of the SDRAM controller. This maps to the address space of the SDRAM controller in the Qsys subsystem.
 #define START_BYTE 0xF00BF00B
 #define RWSIZE (32 / 8)
+
+// Image and coefficient constants
+#define IMSIZE 128 // Number of bytes to store image
+#define CSIZE 2048 // Number of bytes to store coefficients
 PCIE_BAR pcie_bars[] = { PCIE_BAR0, PCIE_BAR1 , PCIE_BAR2 , PCIE_BAR3 , PCIE_BAR4 , PCIE_BAR5 };
 
 void test32( PCIE_HANDLE hPCIe, DWORD addr );
@@ -48,9 +52,11 @@ int main(void)
   printf("Testing the configuration registers for the Custom Slave Module\n");
   test32(hPCIe, CRA);			// Test the Configuration Registers for reads and writes
   printf("*******************************************************************************\n");
+  */
   //test SDRAM
   printf("************Testing the SDRAM for reads and writes through the DMA ************\n");
-  testDMA(hPCIe,CRA);			// Test the SDRAM for reads and writes
+  testDMA(hPCIe,SDRAM);			// Test the SDRAM for reads and writes
+  /*
 
   printf("************Testing the SDRAM for writes through the DMA and reads through the Custom Slave Module ************\n");
   testMixed(hPCIe, CRA);

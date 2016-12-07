@@ -258,18 +258,22 @@ event assert_fail;
       wait (`TB.reset_n == 1);
       repeat(10) @(posedge `TB.clk);
 
-      @(negedge `TB.clk)
-      `TB.tb_get_image = 1'b1;
-      @(negedge `TB.clk)
-      `TB.tb_get_image = 1'b0;
+      @(negedge `TB.clk);
+      //`TB.tb_get_image = 1'b1;
+      `TB.tb_image_address = 0;
+      `TB.tb_start_detecting = 1;
+      @(negedge `TB.clk);
+
+      //`TB.tb_get_image = 1'b0;
+      `TB.tb_start_detecting = 0;
       $display("Starting master test program");
 
-      @(negedge `TB.tb_busy);
+      //@(negedge `TB.tb_busy);
       @(negedge `TB.clk);
-      `TB.tb_get_coeffs = 1'b1;
-      `TB.tb_layer = 2'h0;
+      //`TB.tb_get_coeffs = 1'b1;
+      //`TB.tb_layer = 2'h0;
       @(negedge `TB.clk);
-      `TB.tb_get_coeffs = 1'b0;
+      //`TB.tb_get_coeffs = 1'b0;
 
 
       //$display("Master sending out non bursting write commands");
@@ -284,14 +288,14 @@ event assert_fail;
    end
 
    task automatic master_send_commands (
-      int            num_command,
-      Transaction    trans,
-      Burstmode      burstmode
-   );
+                                        int num_command,
+                                        Transaction trans,
+                                        Burstmode burstmode
+                                        );
 
       Command     cmd;
       Response    rsp, exp_rsp;
-      int         master_id, slave_id;
+      int                                   master_id, slave_id;
 
       master_id   = 0;
       slave_id    = 0;

@@ -15,9 +15,9 @@ module nn_test #(
                    input wire                    get_coeffs,
                    input wire                    get_image,
                    input wire [LBITS-1:0]        layer,
-                   output wire                   busy,
-                   output wire [IMSIZE-1:0][7:0] image_data,
-                   output wire [CSIZE-1:0][7:0]  coeff_data
+                   output wire                   busy
+                   //output wire [IMSIZE-1:0][7:0] image_data,
+                   //output wire [CSIZE-1:0][7:0]  coeff_data
                    );
 
 
@@ -35,9 +35,9 @@ module nn_test #(
 		                    .top_level_layer     (layer),
 		                    .top_level_get_coeffs(get_coeffs),
 		                    .top_level_image_data(image_data),
-		                    .top_level_coeff_data(coeff_data),
-		                    .clk_clk             (clock),
-		                    .reset_reset_n       (reset_n)
+		                    .top_level_coeff_data(coeff_data)
+		                    //.clk_clk             (clock),
+		                    //.reset_reset_n       (reset_n)
 	                       );
    /*
    verification_bus u0 (

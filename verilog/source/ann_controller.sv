@@ -34,7 +34,7 @@ module ann_controller
    	output reg [1:0] coef_select
 );
 
-typedef enum bit [3:0] {IDLE, REQUEST_IMAGE, LOAD_IMAGE, REQUEST_COEF, WAIT_COEF, START_LAYER, WAIT_LAYER, INCR_LAYER, CHECK_DONE, DISPLAY_OUT, PAUSE_COEF} all_states;
+typedef enum bit [3:0] {IDLE, REQUEST_IMAGE, LOAD_IMAGE, WAIT_IMAGE,REQUEST_COEF, WAIT_COEF, START_LAYER, WAIT_LAYER, INCR_LAYER, CHECK_DONE, DISPLAY_OUT, PAUSE_COEF} all_states;
 
 
 
@@ -76,8 +76,12 @@ always_comb begin
 				nxt_state = REQUEST_IMAGE;		
 		end
 		REQUEST_IMAGE: begin
-			if(image_weights_loaded == 1'b1)
+			nxt_state = WAIT_IMAGE;
+		end
+		WAIT_IMAGE: begin
+			if (image_weights_loaded == 1'b1) begin
 				nxt_state = LOAD_IMAGE;
+			end
 		end
 		LOAD_IMAGE: begin
 			nxt_state = REQUEST_COEF;
@@ -134,13 +138,18 @@ always_comb begin
 	
 	case(state)
 		IDLE: begin
-			coeff_ready = 0;
+			coeff_ready = 0;	
+			coef_select_temp = 2'b11;
 		end	
 		REQUEST_IMAGE: begin
-			coeff_ready = 1;
+			request_coef = 1;
 			coef_select_temp = 2'b11;
 		end
+		WAIT_IMAGE: begin
+			request_coef = 0;
+		end
 		LOAD_IMAGE: begin
+			request_coef = 0;
 			load_next = 4;	
 			//wait for image to load
 			coeff_ready = 0;

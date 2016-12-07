@@ -4,13 +4,13 @@ module sdram_interface #(
                          parameter MASTER_ADDRESSWIDTH = 26 ,  	// ADDRESSWIDTH specifies how many addresses the Master can address
                          //parameter SLAVE_ADDRESSWIDTH = 3 ,  	// ADDRESSWIDTH specifies how many addresses the slave needs to be mapped to. log(NUMREGS)
                          parameter DATAWIDTH = 8 ,    		// DATAWIDTH specifies the data width. Default 32 bits
-                         parameter NUMREGS = 8 ,       		// Number of Internal Registers for Custom Logic
+                         parameter NUMREGS = 16 ,       		// Number of Internal Registers for Custom Logic
                          parameter REGWIDTH = 32,       		// Data Width for the Internal Registers. Default 32 bits
 
                          // My additions
                          parameter IMSIZE = 128,
                          parameter IMBITS = 6,
-                         parameter CSIZE = (64*16 + 16*8 + 8*10)*2, // number of bytes for max layer
+                         parameter CSIZE = (64*16)*2, // number of bytes for max layer
                          parameter NUMLAYERS = 2     // ciel( log2( number of layers in network = 3 ) )
                          )
    (
@@ -22,8 +22,8 @@ module sdram_interface #(
     //input wire                             get_coeffs,   // Pulsed high when layer coefficients are needed
     input wire                             get_data, // High when data is being requested, see which_data for which data
     input wire [NUMLAYERS-1:0]             which_data, // 00: layer 0, 01: layer 1, 10: layer 2, 11: image
-    output wire [IMSIZE*8-1:0]             image_data_o, // Outputs image data, valid after busy goes low
-    output wire [CSIZE*8-1:0]              coeff_data_o, // Outputs coeff data, valid after busy goes low
+    output reg [IMSIZE*8-1:0]              image_data_o, // Outputs image data, valid after busy goes low
+    output reg [CSIZE*8-1:0]               coeff_data_o, // Outputs coeff data, valid after busy goes low
     output reg                             busy, // Set high when reading data
 
     // Bus Master Interface
@@ -54,17 +54,20 @@ module sdram_interface #(
    logic [MASTER_ADDRESSWIDTH-1:0]         address, nextAddress;
    logic [DATAWIDTH-1:0]                   nextRead_data, read_data;
    logic [DATAWIDTH-1:0]                   nextData, wr_data;
-   logic [NUMREGS-1:0][REGWIDTH-1:0]       csr_registers;  		// Command and Status Registers (CSR) for custom logic
+   //logic [NUMREGS-1:0][REGWIDTH-1:0]       csr_registers;  		// Command and Status Registers (CSR) for custom logic
    logic [NUMREGS-1:0]                     reg_index, nextRegIndex;
-   logic [NUMREGS-1:0][REGWIDTH-1:0]       read_data_registers;  //Store SDRAM read data for display
+   //logic [NUMREGS-1:0][REGWIDTH-1:0]       read_data_registers;  //Store SDRAM read data for display
    logic                                   new_image_data_flag;
    logic                                   new_coeff_data_flag;
 
    typedef enum                            {IDLE, IMREAD, L0READ, L1READ, L2READ} state_t;
    state_t state, nextState;
 
-   assign image_data_o = image_data;
-   assign coeff_data_o = coeff_data;
+   // Image and coefficient ouptut
+   always_comb begin
+      image_data_o = image_data;
+      coeff_data_o = coeff_data;
+   end
 
    // Master Side
 
@@ -75,7 +78,7 @@ module sdram_interface #(
          state <= IDLE;
          wr_data <= 0 ;
          read_data <= 32'hFEEDFEED;
-         read_data_registers <= '0;
+         //read_data_registers <= '0;
       end else begin
          //$display("%t state: %d, nextState: %d", $time, state, nextState);
          state <= nextState;

@@ -95,6 +95,11 @@
          value = "1";
          type = "int";
       }
+      datum sopceditor_expanded
+      {
+         value = "0";
+         type = "boolean";
+      }
    }
    element sdram.s1
    {
@@ -123,7 +128,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "1";
+         value = "0";
          type = "boolean";
       }
    }
@@ -144,7 +149,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "1";
+         value = "0";
          type = "boolean";
       }
    }
@@ -597,7 +602,9 @@
   <parameter name="DATAWIDTH" value="8" />
   <parameter name="NUMREGS" value="8" />
   <parameter name="REGWIDTH" value="32" />
+  <parameter name="IMSIZE" value="64" />
   <parameter name="IMBITS" value="6" />
+  <parameter name="CSIZE" value="2048" />
   <parameter name="CBITS" value="11" />
   <parameter name="NUMLAYERS" value="2" />
   <parameter name="AUTO_CLOCK_CLOCK_RATE" value="50000000" />

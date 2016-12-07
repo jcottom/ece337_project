@@ -36,16 +36,15 @@ module neural_network(
                       output logic [6:0]  HEX7
                       );
 
-   localparam IMBITS = 6;
-   localparam CBITS = 11;
+   localparam IMSIZE = 128;
+   localparam CSIZE = (64*16 + 16*8 + 8*10)*2;
    localparam LBITS = 2;
 
-   wire                                   get_coeffs;
-   wire                                   get_image;
-   wire [LBITS-1:0]                       layer;
+   wire                                   get_data;
+   wire [LBITS-1:0]                       which_data;
    wire                                   busy;
-   wire [IMBITS-1:0][7:0]                 image_data;
-   wire [CBITS-1:0][7:0]                  coeff_data;
+   wire [IMSIZE-1:0][7:0]                 image_data;
+   wire [CSIZE-1:0][7:0]                  coeff_data;
 
    // Assigments
    //assign DRAM_CLK = CLOCK_50;
@@ -56,15 +55,14 @@ module neural_network(
 
    // Instantiate interface to SDRAM
    neural_network_bus BUS_INST (
-                                .clk_clk                                  (CLOCK_50),                                  //                         clk.clk
-                                .reset_reset_n                            (KEY[0]),                            //                       reset.reset_n
+                                .clk_clk                     (CLOCK_50),                                  //                         clk.clk
+                                .reset_reset_n               (KEY[0]),                            //                       reset.reset_n
                                 // To other submodules
                                 .top_level_busy              (busy),              //         top_level.busy
                                 .top_level_coeff_data        (coeff_data),        //                  .coeff_data
-                                .top_level_get_image         (get_image),         //                  .get_image
                                 .top_level_image_data        (image_data),        //                  .image_data
-                                .top_level_layer             (layer),             //                  .layer
-                                .top_level_get_coeffs        (get_coeffs),         //                  .get_coeffs
+                                .top_level_which_data        (which_data),             //                  .layer
+                                .top_level_get_data          (get_data),         //                  .get_coeffs
                                 // To SDRAM
                                 .sdram_addr                  (DRAM_ADDR),                          //                  sdram_wire.addr
                                 .sdram_ba                    (DRAM_BA),                            //                            .ba

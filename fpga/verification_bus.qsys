@@ -118,7 +118,7 @@
   <parameter name="ASSERT_HIGH_LOCK" value="1" />
   <parameter name="AV_BURST_LINEWRAP" value="1" />
   <parameter name="AV_BURST_BNDR_ONLY" value="1" />
-  <parameter name="AV_MAX_PENDING_READS" value="2048" />
+  <parameter name="AV_MAX_PENDING_READS" value="3000" />
   <parameter name="AV_MAX_PENDING_WRITES" value="0" />
   <parameter name="AV_FIX_READ_LATENCY" value="0" />
   <parameter name="AV_READ_WAIT_TIME" value="1" />
@@ -135,10 +135,11 @@
    name="sdram_interface">
   <parameter name="MASTER_ADDRESSWIDTH" value="32" />
   <parameter name="DATAWIDTH" value="8" />
-  <parameter name="NUMREGS" value="8" />
+  <parameter name="NUMREGS" value="16" />
   <parameter name="REGWIDTH" value="32" />
+  <parameter name="IMSIZE" value="128" />
   <parameter name="IMBITS" value="6" />
-  <parameter name="CBITS" value="11" />
+  <parameter name="CSIZE" value="2048" />
   <parameter name="NUMLAYERS" value="2" />
   <parameter name="AUTO_CLOCK_CLOCK_RATE" value="50000000" />
  </module>
