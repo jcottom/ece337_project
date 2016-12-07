@@ -36,14 +36,14 @@ module top_ann
    generate
       for(i = 0; i < IMAGE_SIZE; i = i + 1) begin
          for (k = 0; k < 16; k = k +1) begin
-            assign image_o[i*16 + k] = image[i][k];
+            assign image[i][k] = image_o[i*16 + k];
          end
       end
 
       for(i = 0; i < IMAGE_SIZE; i = i + 1) begin
          for(j = 0; j < FIRST_LAYER; j = j + 1) begin
             for (k = 0; k < 16; k = k +1) begin
-               assign weights_o[k + 16*j + IMAGE_SIZE*i] = weights[i][j][k];
+               assign  weights[j][i][k] = weights_o[k + 16*j + IMAGE_SIZE*i];
             end
          end
       end

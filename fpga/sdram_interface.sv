@@ -138,7 +138,7 @@ module sdram_interface #(
            if (reg_index >= L0SIZE) begin
               nextState = IDLE;
            end else begin
-              if (!master_waitrequest && address < SDRAM_ADDR + L0SIZE) begin
+              if (!master_waitrequest && address < SDRAM_ADDR + IMSIZE + L0SIZE) begin
                  nextAddress = address + 1;
               end
               if (master_readdatavalid) begin
@@ -151,7 +151,7 @@ module sdram_interface #(
            if (reg_index >= L1SIZE) begin
               nextState = IDLE;
            end else begin
-              if (!master_waitrequest && address < SDRAM_ADDR + L1SIZE) begin
+              if (!master_waitrequest && address < SDRAM_ADDR + IMSIZE + L0SIZE + L1SIZE) begin
                  nextAddress = address + 1;
               end
               if (master_readdatavalid) begin
@@ -164,7 +164,7 @@ module sdram_interface #(
            if (reg_index >= L2SIZE) begin
               nextState = IDLE;
            end else begin
-              if (!master_waitrequest && address < SDRAM_ADDR + L2SIZE) begin
+              if (!master_waitrequest && address < SDRAM_ADDR + IMSIZE + L0SIZE + L1SIZE + L2SIZE) begin
                  nextAddress = address + 1;
               end
               if (master_readdatavalid) begin
