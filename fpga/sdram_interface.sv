@@ -8,11 +8,9 @@ module sdram_interface #(
                          parameter REGWIDTH = 32,       		// Data Width for the Internal Registers. Default 32 bits
 
                          // My additions
-                         parameter IMSIZE = 64,
+                         parameter IMSIZE = 128,
                          parameter IMBITS = 6,
-                         parameter CSIZE = 2048, // number of bytes for max layer
-                         parameter CPORTSIZE = CSIZE/16,
-                         parameter CBITS = 11,
+                         parameter CSIZE = (64*16 + 16*8 + 8*10)*2, // number of bytes for max layer
                          parameter NUMLAYERS = 2     // ciel( log2( number of layers in network = 3 ) )
                          )
    (
@@ -20,11 +18,12 @@ module sdram_interface #(
     input logic                            reset_n,
 
     // Interface to Top Level
-    input wire                             get_image, // Pulsed high when an image is needed
-    input wire                             get_coeffs, // Pulsed high when layer coefficients are needed
-    input wire [NUMLAYERS-1:0]             layer, // Specifies which layer to retrieve
-    output wire [IMSIZE*8-1:0]             image_data_o,
-    output wire [CSIZE*8-1:0]              coeff_data_o,
+    //input wire                             get_image,    // Pulsed high when an image is needed
+    //input wire                             get_coeffs,   // Pulsed high when layer coefficients are needed
+    input wire                             get_data, // High when data is being requested, see which_data for which data
+    input wire [NUMLAYERS-1:0]             which_data, // 00: layer 0, 01: layer 1, 10: layer 2, 11: image
+    output wire [IMSIZE*8-1:0]             image_data_o, // Outputs image data, valid after busy goes low
+    output wire [CSIZE*8-1:0]              coeff_data_o, // Outputs coeff data, valid after busy goes low
     output reg                             busy, // Set high when reading data
 
     // Bus Master Interface
@@ -40,10 +39,9 @@ module sdram_interface #(
     //output reg [MAXREAD-1:0]               master_burstcount, There doesn't appear to be burst capability on the SDRAM controller, which is a shame.
 
     );
-   //localparam IMSIZE = 64;      // Size of input image (8x8 pixels)
    localparam L0SIZE = 64*16*2; // Number of coefficients in layer 0 times size of coefficient
-   localparam L1SIZE = 16*4*2;  // Size of layer 1 coefficients
-   localparam L2SIZE = 4*10*2;  // Size of layer 2 coefficients
+   localparam L1SIZE = 16*8*2;  // Size of layer 1 coefficients
+   localparam L2SIZE = 8*10*2;  // Size of layer 2 coefficients
 
    logic [IMSIZE-1:0][7:0]                 image_data;
    logic [CSIZE-1:0][7:0]                  coeff_data;
@@ -67,7 +65,6 @@ module sdram_interface #(
 
    assign image_data_o = image_data;
    assign coeff_data_o = coeff_data;
-   //assign {coeff_data_0, coeff_data_1, coeff_data_2, coeff_data_3, coeff_data_4, coeff_data_5, coeff_data_6, coeff_data_7, coeff_data_8, coeff_data_9, coeff_data_10, coeff_data_11, coeff_data_12, coeff_data_13, coeff_data_14, coeff_data_15} = coeff_data;
 
    // Master Side
 
@@ -108,16 +105,15 @@ module sdram_interface #(
         IDLE : begin
            nextAddress = SDRAM_ADDR;
            nextRegIndex = 0;
-           if (get_image && address >= SDRAM_ADDR) begin
-              //$display("%t address: %h, SDRAM_ADDR: %h, get_image: %b", $time, address, SDRAM_ADDR, get_image);
+           if (get_data && which_data == 2'b11 && address >= SDRAM_ADDR) begin
               nextState = IMREAD;
-           end else if (get_coeffs && layer == 2'h0 && address >= SDRAM_ADDR) begin
+           end else if (get_data && which_data == 2'b00 && address >= SDRAM_ADDR) begin
               nextState = L0READ;
               nextAddress = SDRAM_ADDR + IMSIZE;
-           end else if (get_coeffs && layer == 2'h1 && address >= SDRAM_ADDR) begin
+           end else if (get_data && which_data == 2'b01 && address >= SDRAM_ADDR) begin
               nextState = L1READ;
               nextAddress = SDRAM_ADDR + IMSIZE + L0SIZE;
-           end else if (get_coeffs && layer == 2'h2 && address >= SDRAM_ADDR) begin
+           end else if (get_data && which_data == 2'b10 && address >= SDRAM_ADDR) begin
               nextState = L2READ;
               nextAddress = SDRAM_ADDR + IMSIZE + L0SIZE + L1SIZE;
            end
