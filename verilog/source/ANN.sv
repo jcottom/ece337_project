@@ -26,8 +26,7 @@ module ANN
 	output reg request_coef,
 	output reg [1:0]coef_select,
 	output reg [7:0] seven_seg,
-	output reg [IMAGE_SIZE - 1:0][15:0] ANN_pipeline_register ,
-	output reg [IMAGE_SIZE - 1:0][15:0] nxt_ANN_pipeline_register
+	output reg [IMAGE_SIZE - 1:0][15:0] ANN_pipeline_register
 );
 
 
@@ -41,7 +40,7 @@ reg n_start_done;
 
 //register variables
 //reg [15:0] ANN_pipeline_register [IMAGE_SIZE - 1:0];
-//reg [15:0] nxt_ANN_pipeline_register [IMAGE_SIZE - 1:0];
+reg [IMAGE_SIZE - 1:0][15:0] nxt_ANN_pipeline_register ;
 
 //output from the nodes variables
 reg [IMAGE_SIZE - 1:0][15:0] node_out ;
@@ -108,7 +107,8 @@ always_comb begin
 		/*for(int i = 0; i < IMAGE_SIZE; i++) begin
 			nxt_ANN_pipeline_register[IMAGE_SIZE - 1 - i] = node_out[i];
 		end*/
-		nxt_ANN_pipeline_register = node_out;
+		nxt_ANN_pipeline_register = 0;
+		nxt_ANN_pipeline_register[15:0] = node_out[15:0];
 	end
 	//if load next = 2, load all nodes used in the second layer
 	else if(load_next == 2) begin
@@ -120,7 +120,8 @@ always_comb begin
 		/*for(int i = 0; i < IMAGE_SIZE; i++) begin
 			nxt_ANN_pipeline_register[IMAGE_SIZE - 1 - i] = node_out[i];
 		end*/
-		nxt_ANN_pipeline_register = node_out;
+		nxt_ANN_pipeline_register = 0;
+		nxt_ANN_pipeline_register[15:0] = node_out[15:0];
 	end	
 	//if load next = 3, load all nodes used in the third layer
 	else if(load_next == 3) begin
@@ -131,7 +132,8 @@ always_comb begin
 		/*for(int i = 0; i < IMAGE_SIZE; i++) begin
 			nxt_ANN_pipeline_register[IMAGE_SIZE - 1 - i] = node_out[i];
 		end*/
-		nxt_ANN_pipeline_register = node_out;
+		nxt_ANN_pipeline_register = 0;
+		nxt_ANN_pipeline_register[15:0] = node_out[15:0];
 	end
 	//else keep the regsiter the same
 	else begin
