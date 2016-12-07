@@ -26,8 +26,8 @@ module node
 	input wire start,
 	input wire reset_acc,
 	input wire [6:0] cnt_val,
-	input wire [15:0] coef [IMAGE_SIZE - 1:0],
-	input wire [15:0] data_in [IMAGE_SIZE - 1:0],
+	input wire [IMAGE_SIZE - 1:0][15:0] coef,
+	input wire [IMAGE_SIZE - 1:0][15:0] data_in,
 	output reg [15:0] node_out
 );
 
@@ -56,7 +56,6 @@ module node
 		else begin
 			//node_out <= nxt_node_out;
 			add2 <= nxt_out;
-			//add1 <= nxt_add1;
 			nxt_coef <= coef[cnt_val];
 			nxt_data <= data_in[cnt_val];
 
@@ -76,9 +75,8 @@ module node
 		end
 	end
 
-	//fixed_point_mult mult(.a(coef[cnt_val]), .b(data_in[cnt_val]), .result(nxt_add1));
 	fixed_point_mult mult(.a(coef[cnt_val]), .b(data_in[cnt_val]), .result(add1));
-	//fixed_point_mult mult(.a(nxt_coef), .b(nxt_data), .result(nxt_add1)); 
+	//fixed_point_mult mult(.a(coef[IMAGE_SIZE - 1 - cnt_val]), .b(data_in[IAMGE_SIZE - 1 - cnt_val]), .result(add1));
 	fixed_point_add  add(.a(add2), .b(add1), .result(sum)); //sum = add1 + add2
 	new_activation       active(.in(add2[31:16]) ,.out(node_out));
 

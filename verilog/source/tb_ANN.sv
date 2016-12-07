@@ -24,8 +24,8 @@ module tb_ANN
 	reg tb_clk; 
 	reg tb_n_rst;
 	reg tb_image_weights_loaded;
-	reg [15:0] tb_image [IMAGE_SIZE - 1:0];
-	reg [15:0] tb_weights [15:0][IMAGE_SIZE - 1:0];
+	reg [IMAGE_SIZE - 1:0][15:0] tb_image;
+	reg [15:0][IMAGE_SIZE - 1:0][15:0] tb_weights;
 
 
 
@@ -34,7 +34,7 @@ module tb_ANN
 	reg tb_start_detecting;
 	reg [1:0] tb_coef_select;
 	reg [7:0] tb_seven_seg;
-	reg [15:0] tb_ANN_pipeline_register [IMAGE_SIZE - 1:0];
+	reg [IMAGE_SIZE - 1:0][15:0] tb_ANN_pipeline_register;
 
 	ANN  dut(.clk(tb_clk),.n_rst(tb_n_rst),.image_weights_loaded(tb_image_weights_loaded),.image(tb_image),.weights(tb_weights),.done_processing(tb_done_processing),
 		.request_coef(tb_request_coef),.coef_select(tb_coef_select),.seven_seg(tb_seven_seg), .ANN_pipeline_register(tb_ANN_pipeline_register), .start_detecting(tb_start_detecting));

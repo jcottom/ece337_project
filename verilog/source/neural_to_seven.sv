@@ -8,7 +8,7 @@
 
 module neural_to_seven
 (
-    input wire [15:0] neural_out [9:0],
+    input wire [9:0][15:0] neural_out,
     output wire [7:0] seven_seg
 );
 shortint thresh = 16'h0400; //0000.010000000000
