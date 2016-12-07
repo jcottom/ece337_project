@@ -19,11 +19,12 @@ module ANN
 	input wire clk,
 	input wire n_rst,
 	input wire image_weights_loaded,
+	input wire start_detecting,
 	input wire [15:0] image [IMAGE_SIZE - 1:0],
 	input wire [15:0] weights [FIRST_LAYER - 1:0][IMAGE_SIZE - 1:0],
 	output reg done_processing,
 	output reg request_coef,
-	output reg coef_select,
+	output reg [1:0] coef_select,
 	output reg [7:0] seven_seg,
 	output reg [15:0] ANN_pipeline_register [IMAGE_SIZE - 1:0]
 );
@@ -69,7 +70,7 @@ input_node_timer timer(.clk(clk),.n_rst(n_rst), .max_input(max_input), .coef_rea
 
 //ANN controller
 ann_controller #(.IMAGE_SIZE(IMAGE_SIZE))controller(.clk(clk),.n_rst(n_rst),.image_weights_loaded(image_weights_loaded),.n_start_done(n_start_done),.max_input(max_input),.coeff_ready(coef_ready),
-			.reset_accum(reset_accum),.load_next(load_next),.request_coef(request_coef),.done_processing(nxt_done_processing),.coef_select(coef_select));
+			.reset_accum(reset_accum),.load_next(load_next),.request_coef(request_coef),.done_processing(nxt_done_processing),.coef_select(coef_select), .start_detecting(start_detecting));
 
 
 always_ff @ (posedge clk, negedge n_rst)

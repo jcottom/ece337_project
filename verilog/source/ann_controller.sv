@@ -24,16 +24,17 @@ module ann_controller
 	input wire n_rst,
 	input wire image_weights_loaded,
    	input wire n_start_done,
+	input wire start_detecting,
    	output reg [6:0] max_input,
 	output reg coeff_ready,
 	output reg reset_accum,
    	output reg [2:0] load_next,
    	output reg request_coef,
    	output reg done_processing,
-   	output reg coef_select
+   	output reg [1:0] coef_select
 );
 
-typedef enum bit [3:0] {IDLE, LOAD_IMAGE, REQUEST_COEF, WAIT_COEF, START_LAYER, WAIT_LAYER, INCR_LAYER, CHECK_DONE, DISPLAY_OUT, PAUSE_COEF} all_states;
+typedef enum bit [3:0] {IDLE, REQUEST_IMAGE, LOAD_IMAGE, REQUEST_COEF, WAIT_COEF, START_LAYER, WAIT_LAYER, INCR_LAYER, CHECK_DONE, DISPLAY_OUT, PAUSE_COEF} all_states;
 
 
 
@@ -44,10 +45,14 @@ all_states nxt_state;
 reg [2:0] cur_layer;
 reg [2:0] nxt_layer;
 
+reg [1:0] coef_select_temp;
+
 localparam max_layers = 3;
 
 localparam input_delay = 0;
 
+
+assign coef_select = coef_select_temp;
 
 always_ff @ (posedge clk, negedge n_rst)
 begin
@@ -67,8 +72,12 @@ always_comb begin
 	nxt_state = state; //preset the next state to be the current state
 	case(state)
 		IDLE : begin
+			if(start_detecting == 1'b1)
+				nxt_state = REQUEST_IMAGE;		
+		end
+		REQUEST_IMAGE: begin
 			if(image_weights_loaded == 1'b1)
-				nxt_state = LOAD_IMAGE;		
+				nxt_state = LOAD_IMAGE;
 		end
 		LOAD_IMAGE: begin
 			nxt_state = REQUEST_COEF;
@@ -121,13 +130,16 @@ always_comb begin
    	load_next = 0;
    	request_coef = 0;
    	done_processing = 0;
-   	coef_select = 0;  //what does this variable do?
 	nxt_layer = cur_layer;
 	
 	case(state)
 		IDLE: begin
 			coeff_ready = 0;
-		end		
+		end	
+		REQUEST_IMAGE: begin
+			coeff_ready = 1;
+			coef_select_temp = 2'b11;
+		end
 		LOAD_IMAGE: begin
 			load_next = 4;	
 			//wait for image to load
@@ -135,8 +147,17 @@ always_comb begin
 		end
 		REQUEST_COEF: begin
 			request_coef = 1;
-			coeff_ready = 0;
+			coeff_ready = 0;	
 			//coef_select = ???
+			if (cur_layer == 2'b00) begin
+				coef_select_temp = 2'b00;
+			end 
+			if (cur_layer == 2'b01) begin
+				coef_select_temp = 2'b01;
+			end
+			else if (cur_layer == 2'b10) begin
+				coef_select_temp = 2'b10;
+			end
 		end
 		WAIT_COEF: begin
 			coeff_ready = 0;
@@ -165,6 +186,7 @@ always_comb begin
 			nxt_layer = 0;
 		end
 	endcase
+
 end
 
 
