@@ -30,10 +30,10 @@ reg sign_bit;
 reg [29:0] temp;
 
 always_comb begin
-	sign_bit = a[15] ^ b[15];
-	temp = a[14:0] * b[14:0];
+	sign_bit = a[15] ^ b[15]; // Reduction OR determines sign bit
+	temp = a[14:0] * b[14:0]; // Multiply magnitudes 
 
-	result = {sign_bit, 1'b0, temp[29:0]};
+	result = {sign_bit, 1'b0, temp[29:0]}; //Add sign and round to 30 bits
 
 end
 
