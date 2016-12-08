@@ -20,11 +20,7 @@ module input_node_timer
 
 
 
-
+//Start counting and return done pulse for each period
 flex_counter #(.NUM_CNT_BITS(7)) counter(.clk(clk), .n_rst(n_rst), .clear(!coef_ready), .count_enable(coef_ready && !n_start_done), .rollover_val(max_input), .count_out(input_num), .rollover_flag(n_start_done));
-
-always_comb begin
-	
-end
 
 endmodule
