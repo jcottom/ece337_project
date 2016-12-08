@@ -39,13 +39,13 @@ end
 
 always_comb begin
 	
-	if(clear == 1) begin
+	if(clear == 1) begin // Restart count at 0
 		nxt_cnt = 0;				
 		nxt_rollover = 0;
 	end
-	else if(count_enable == 1'b1) begin
+	else if(count_enable == 1'b1) begin //Check if count should increase
 		
-		if(count_out >= rollover_val) begin
+		if(count_out >= rollover_val) begin // Check for final value
 			nxt_cnt = 1;
 		end
 		else begin
@@ -53,7 +53,7 @@ always_comb begin
 		end
 		
 		
-		if(count_out == rollover_val - 1) begin	
+		if(count_out == rollover_val - 1) begin	// Check for one less than final value
 			nxt_rollover = 1;
 		end
 		else begin
