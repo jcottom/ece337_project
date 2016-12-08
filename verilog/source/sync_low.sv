@@ -17,13 +17,13 @@ module sync_low
 
 always_ff @ (posedge clk, negedge n_rst)
 begin
-	if(1'b0 == n_rst)
+	if(1'b0 == n_rst)  //If reset
 	begin
 		sync_out <= 1'b0;
 		front <= 1'b0;
 	end
 	else
-	begin
+	begin // Synchronize output to clock edge
 		sync_out <= front;
 		front <= async_in;
 	end
