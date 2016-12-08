@@ -1,7 +1,7 @@
 // $Id: $
 // File name:   tb_input_node_timer.sv
 // Created:     11/8/2016
-// Author:      Ryan McBee
+// Author:      Ryan McBee, Taylor Lipson, and Cheyenne Martinez
 // Lab Section: 337-03
 // Version:     1.0  Initial Design Entry
 // Description: input node timer test bench
