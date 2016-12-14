@@ -16,34 +16,34 @@ module fixed_point_add
 reg [30:0] temp;
 reg sign_bit;
 	
-	
 // Fixed point math logic
-always_comb begin
-	if(a[31] == b[31]) begin // Sign of inputs are the same
-		temp = a[30:0] + b[30:0]; // Add input a and input b
-		result = {a[31], temp}; // Add sign of input a
-	end
-	else if(a[31] == 1) begin // Sign of inputs are the same and a is negative
-		if(a[30:0] < b[30:0]) begin // If magnitude of b is grater than a
-			temp = b[30:0] - a[30:0]; 
-			result = {0, temp}; // Positive result
+	always_comb 
+	begin
+		if(a[31] == b[31]) begin // Sign of inputs are the same
+			temp = a[30:0] + b[30:0]; // Add input a and input b
+			result = {a[31], temp}; // Add sign of input a
+		end
+		else if(a[31] == 1) begin // Sign of inputs are the same and a is negative
+			if(a[30:0] < b[30:0]) begin // If magnitude of b is grater than a
+				temp = b[30:0] - a[30:0];
+				result = {0, temp}; // Positive result
+			end
+			else begin // Magnitude of a s grater than b
+				temp = a[30:0] - b[30:0];
+				result = {1, temp}; //Negative result
+			end 
 		end
 		else begin
-			temp = a[30:0] - b[30:0];
-			result = {1, temp}; //Negative result
-		end 
-	end
-	else begin
-		if(a[30:0] < b[30:0]) begin // A is negative and b has a larger magnitude
-			temp = b[30:0] - a[30:0];
-			result = {1, temp}; //Negative result
+			if(a[30:0] < b[30:0]) begin // A is negative and b has a larger magnitude
+				temp = b[30:0] - a[30:0]; 
+				result = {1, temp}; //Negative result
+			end
+			else begin // A is negative and has a larger magnitude than b
+				temp = a[30:0] - b[30:0];
+				result = {0, temp}; // Positive result
+			end 
 		end
-		else begin
-			temp = a[30:0] - b[30:0];
-			result = {0, temp}; // Positive result
-		end 
+
 	end
-	
-end
 
 endmodule
