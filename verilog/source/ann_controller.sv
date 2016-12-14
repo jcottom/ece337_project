@@ -61,6 +61,7 @@ begin
 		state <= IDLE;
 		cur_layer <= 0;
 	end
+	//Assign next state to current and increment layer
 	else begin
 		state <= nxt_state;
 		cur_layer <= nxt_layer;
@@ -71,53 +72,53 @@ always_comb begin
 	
 	nxt_state = state; //preset the next state to be the current state
 	case(state)
-		IDLE : begin
+		IDLE : begin //Wait until start detect is enabled 
 			if(start_detecting == 1'b1)
 				nxt_state = REQUEST_IMAGE;		
 		end
-		REQUEST_IMAGE: begin
+		REQUEST_IMAGE: begin // Start image load
 			nxt_state = WAIT_IMAGE;
 		end
-		WAIT_IMAGE: begin
+		WAIT_IMAGE: begin // Wait for image to load
 			if (image_weights_loaded == 1'b1) begin
 				nxt_state = LOAD_IMAGE;
 			end
 		end
-		LOAD_IMAGE: begin
+		LOAD_IMAGE: begin // Finished loading image
 			nxt_state = REQUEST_COEF;
 		end
-		REQUEST_COEF: begin
+		REQUEST_COEF: begin // Wait state for load coefficients
 			nxt_state = WAIT_COEF;
 		end
-		WAIT_COEF: begin
+		WAIT_COEF: begin // Wait to start loading coefficients 
 			if(image_weights_loaded == 1'b1)
 				nxt_state = PAUSE_COEF;
-				//nxt_state = START_LAYER;
 		end
-		PAUSE_COEF: begin
+		PAUSE_COEF: begin // Wait for coefficients to be loaded
 			nxt_state = START_LAYER;
 		end
-		START_LAYER: begin
+		START_LAYER: begin // Wait for  first layer of nodes to complete calculations
 			nxt_state = WAIT_LAYER;
 		end
-		WAIT_LAYER: begin
+		WAIT_LAYER: begin // Wait for the current layer of nodes to load
 			if(n_start_done == 1'b1)
 				nxt_state = INCR_LAYER;
 		end
-		INCR_LAYER: begin
+		INCR_LAYER: begin // Finished current layer and move to next layer
 			nxt_state = CHECK_DONE;
 		end	
-		CHECK_DONE: begin
+		CHECK_DONE: begin // Check for finsihed ANN
 			if(cur_layer == max_layers)
 				nxt_state = DISPLAY_OUT;
 			else
 				nxt_state = REQUEST_COEF;
 		end
-		DISPLAY_OUT: begin
+		DISPLAY_OUT: begin // ANN Finished. Start output of data
 			nxt_state = IDLE;
 		end
 	endcase
 	
+	// Calculate max layer 
 	if(cur_layer == 0) begin
 		max_input = IMAGE_SIZE + input_delay;
 	end 
@@ -136,6 +137,7 @@ always_comb begin
    	done_processing = 0;
 	nxt_layer = cur_layer;
 	
+	// Input and output varaibles for current state
 	case(state)
 		IDLE: begin
 			coeff_ready = 0;	
@@ -151,13 +153,15 @@ always_comb begin
 		LOAD_IMAGE: begin
 			request_coef = 0;
 			load_next = 4;	
+			
 			//wait for image to load
 			coeff_ready = 0;
 		end
 		REQUEST_COEF: begin
 			request_coef = 1;
 			coeff_ready = 0;	
-			//coef_select = ???
+
+			// Synchronize layers for ANN and SRAM top modules
 			if (cur_layer == 2'b00) begin
 				coef_select_temp = 2'b00;
 			end 

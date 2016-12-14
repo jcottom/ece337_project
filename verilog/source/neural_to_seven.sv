@@ -8,16 +8,17 @@
 
 module neural_to_seven
 (
-    input wire [9:0][15:0] neural_out,
-    output wire [7:0] seven_seg
+    	input wire [9:0][15:0] neural_out,
+   	output wire [7:0] seven_seg
 );
-shortint thresh = 16'h0400; //0000.010000000000
-reg [3:0] i;
-reg [7:0] seven;
+	
+	shortint thresh = 16'h0400; //0000.010000000000
+	reg [3:0] i;
+	reg [7:0] seven;
 
 assign seven_seg = seven;
 
-always_comb begin
+always_comb begin // Decode ANN output
     if (neural_out[0] > thresh) begin
 	i = 0;
     end
@@ -66,7 +67,7 @@ always_comb begin
 	4'b1001: seven = 8'h6F;
 	default: seven = 8'h00;
     endcase*/
-	seven = i;
+	seven = i; // Return value to be output on seven segment display
 
 end
 

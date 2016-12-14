@@ -1,7 +1,7 @@
 // $Id: $
 // File name:   top_ann.sv
 // Created:     12/7/2016
-// Author:      Taylor Lipson
+// Author:      Cheyenne Martinez
 // Lab Section: 337-03
 // Version:     1.0  Initial Design Entry
 // Description: Top level diagram

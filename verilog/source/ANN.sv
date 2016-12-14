@@ -1,7 +1,7 @@
 // $Id: $
 // File name:   input_node_timer.sv
 // Created:     11/8/2016
-// Author:      Ryan McBee
+// Author:      Ryan McBee and Cheyenne Martinez
 // Lab Section: 337-03
 // Version:     1.0  Initial Design Entry
 // Description: ANN that combines multiple sub modules
@@ -60,7 +60,7 @@ end
 
 endgenerate
 
-
+//input to seven segment decoder
 neural_to_seven seven_segment_display(.neural_out(ANN_pipeline_register[9:0]), .seven_seg(seven_seg));
 
 
@@ -100,38 +100,16 @@ always_comb begin
 	end
 	//if load next = 1, load all nodes used in the first layer
 	else if(load_next == 1) begin
-		/*for(int i = 0; i < IMAGE_SIZE; i++) begin
-			nxt_ANN_pipeline_register[i] = 0;
-		end
-		nxt_ANN_pipeline_register[FIRST_LAYER - 1:0] = node_out[FIRST_LAYER - 1:0];*/
-		/*for(int i = 0; i < IMAGE_SIZE; i++) begin
-			nxt_ANN_pipeline_register[IMAGE_SIZE - 1 - i] = node_out[i];
-		end*/
 		nxt_ANN_pipeline_register = 0;
 		nxt_ANN_pipeline_register[15:0] = node_out[15:0];
 	end
 	//if load next = 2, load all nodes used in the second layer
 	else if(load_next == 2) begin
-		//nxt_ANN_pipeline_register[SECOND_LAYER - 1:0] = node_out[SECOND_LAYER - 1:0];
-		/*for(int i = 0; i < IMAGE_SIZE; i++) begin
-			nxt_ANN_pipeline_register[i] = 0;
-		end
-		nxt_ANN_pipeline_register[FIRST_LAYER - 1:FIRST_LAYER -SECOND_LAYER] = node_out[SECOND_LAYER - 1:0];*/
-		/*for(int i = 0; i < IMAGE_SIZE; i++) begin
-			nxt_ANN_pipeline_register[IMAGE_SIZE - 1 - i] = node_out[i];
-		end*/
 		nxt_ANN_pipeline_register = 0;
 		nxt_ANN_pipeline_register[15:0] = node_out[15:0];
 	end	
 	//if load next = 3, load all nodes used in the third layer
 	else if(load_next == 3) begin
-		/*nxt_ANN_pipeline_register[THIRD_LAYER - 1:0] = node_out[THIRD_LAYER - 1:0];
-		for(int i = THIRD_LAYER; i < IMAGE_SIZE; i++) begin
-			nxt_ANN_pipeline_register[i] = 0;
-		end*/
-		/*for(int i = 0; i < IMAGE_SIZE; i++) begin
-			nxt_ANN_pipeline_register[IMAGE_SIZE - 1 - i] = node_out[i];
-		end*/
 		nxt_ANN_pipeline_register = 0;
 		nxt_ANN_pipeline_register[15:0] = node_out[15:0];
 	end
