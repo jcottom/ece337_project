@@ -120,13 +120,13 @@ always_comb begin
 	
 	// Calculate max layer 
 	if(cur_layer == 0) begin
-		max_input = IMAGE_SIZE + input_delay;
+		max_input = IMAGE_SIZE + input_delay; // Value for input to node timer to count up to for input image
 	end 
 	else if(cur_layer == 1) begin
-		max_input = FIRST_LAYER + input_delay;
+		max_input = FIRST_LAYER + input_delay; // Value for input to node timer to count up to for first layer
 	end
 	else begin
-		max_input = SECOND_LAYER + input_delay;
+		max_input = SECOND_LAYER + input_delay; // Value for input to node timer to count up to for second layer
 	end
 
 	//max_input = 16;  //make this max input based on a look up table
@@ -141,14 +141,14 @@ always_comb begin
 	case(state)
 		IDLE: begin
 			coeff_ready = 0;	
-			coef_select_temp = 2'b11;
+			coef_select_temp = 2'b11; // No coefficients 
 		end	
 		REQUEST_IMAGE: begin
-			request_coef = 1; //Request coef from SRAM
-			coef_select_temp = 2'b11;
+			request_coef = 1; // Request coef from SRAM
+			coef_select_temp = 2'b11; // No coefficients
 		end
 		WAIT_IMAGE: begin  
-			request_coef = 0;
+			request_coef = 0; // Done requesting coefficients from SRAM
 		end
 		LOAD_IMAGE: begin
 			request_coef = 0;
