@@ -6,16 +6,6 @@
 // Version:     1.0  Initial Design Entry
 // Description: Artificial neural network individual node
 
-/* Todo
-	
-	* figure out how to input 64 two byte inputs
-	* add in floating point multiplication
-	* add in floating point addition
-*/
-
-
-typedef reg [15:0] double;
-
 module node 
 #(
 	parameter IMAGE_SIZE = 64
@@ -33,14 +23,9 @@ module node
 
 //initialize internal variables
 	reg [31:0] add1; //next value to add to the accumulator
-	reg [31:0] add2; 
-	reg [31:0] nxt_add1;
-	reg [31:0] sum;
-	reg [31:0] nxt_out;
-	reg [15:0] nxt_node_out;
-
-	reg [15:0] nxt_coef;
-	reg [15:0] nxt_data;
+	reg [31:0] add2; //other value put into the add block, also the accumlated value
+	reg [31:0] sum; //sum of the addition block
+	reg [31:0] nxt_out;  //the next output to go into add2(the accumulator)
 	
 
 //create instance of the activatin funciton
@@ -48,15 +33,9 @@ module node
 	begin
 		if(n_rst == 0) begin
 			add2 <= 0;
-			nxt_coef <= 0;
-			nxt_data <= 0;
 		end  
 		else begin
-			add2 <= nxt_out;
-			nxt_coef <= coef[cnt_val];
-			nxt_data <= data_in[cnt_val];
-
-			
+			add2 <= nxt_out;	
 		end
 	end
 	
@@ -71,9 +50,14 @@ module node
 			nxt_out = add2;
 		end
 	end
-
+	
+	//fixed point multiplication
 	fixed_point_mult mult(.a(coef[cnt_val]), .b(data_in[cnt_val]), .result(add1));
+
+	//fixed point addition
 	fixed_point_add  add(.a(add2), .b(add1), .result(sum)); //sum = add1 + add2
+
+	//activation function
 	new_activation       active(.in(add2[31:16]) ,.out(node_out)); //Use only top 16 bits
 
 

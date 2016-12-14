@@ -19,6 +19,8 @@ module neural_to_seven
 assign seven_seg = seven;
 
 always_comb begin // Decode ANN output
+    
+	//decide which values is higher than the threshold. Only one node should be higher than the threshold if the ANN worked properly. If none of the values are greater than the threshold, then that means junk data has been read.
     if (neural_out[0] > thresh) begin
 	i = 0;
     end
@@ -54,7 +56,7 @@ always_comb begin // Decode ANN output
     end
 
 	//gfebcda
-    /*case (i)
+    case (i)
 	4'b0000: seven = 8'h3F;
 	4'b0001: seven = 8'h06;
 	4'b0010: seven = 8'h5b;
@@ -66,8 +68,7 @@ always_comb begin // Decode ANN output
 	4'b1000: seven = 8'h7F;
 	4'b1001: seven = 8'h6F;
 	default: seven = 8'h00;
-    endcase*/
-	seven = i; // Return value to be output on seven segment display
+    endcase
 
 end
 

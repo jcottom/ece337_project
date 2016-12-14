@@ -1,5 +1,14 @@
-/*
- This module serves as the activation function for the neural network.  It is a
+// $Id: $
+// File name:   node.sv
+// Created:     12/5/2016
+// Author:      Ryan McBee
+// Lab Section: 7
+// Version:     1.0  Initial Design Entry
+// Description: actuvatuib fybctuib based on piece wise linear functions that are bit shifts.
+
+
+
+/*This module serves as the activation function for the neural network.  It is a
  combinational block which implements a look-up table for the sigmoid function:
 
                             f(x) = (1 + e^-x)^-1
@@ -31,7 +40,8 @@ module new_activation(
 	reg [15:0] temp_out;
 	
 	always_comb begin
-
+		//The bellow logic checks which region the input values are in and then applies the appropriate linear equation to it	
+		
 		//if positive
 		if(in[15] == 1'b0) begin
 			//if X > 5
@@ -89,6 +99,7 @@ module new_activation(
 		end	
 end
 
+//final output shifted to the left by 4 to get it into correct 16 bit fixed point representation
 assign out = temp_out << 4;
 
 endmodule // activation

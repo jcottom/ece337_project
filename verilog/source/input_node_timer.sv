@@ -4,7 +4,7 @@
 // Author:      Ryan McBee
 // Lab Section: 337-03
 // Version:     1.0  Initial Design Entry
-// Description: input node timer
+// Description: input node timer that controlls which input coefficients and previous node data that the current node should be looking at
 
 
 module input_node_timer
