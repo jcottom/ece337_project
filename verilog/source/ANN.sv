@@ -9,11 +9,11 @@
 
 module ANN
 #(	
-	parameter FIRST_LAYER = 16,
-	parameter SECOND_LAYER = 8,
-	parameter THIRD_LAYER = 10,
+	parameter FIRST_LAYER = 16, // Size / number of nodes for second layer
+	parameter SECOND_LAYER = 8, // Size / number of nodes for second layer
+	parameter THIRD_LAYER = 10, // Confidence in each number from 0 to 9
 
-	parameter IMAGE_SIZE = 64
+	parameter IMAGE_SIZE = 64 //Size of 8x8 grayscale image
 )
 (
 	input wire clk,
@@ -85,16 +85,16 @@ begin
 		done_processing <= 0;	
 	end 
 	else begin
-		ANN_pipeline_register <= nxt_ANN_pipeline_register;
-		done_processing <= nxt_done_processing;
-		node_out <= nxt_node_out;
+		ANN_pipeline_register <= nxt_ANN_pipeline_register; // Move to next ANN pipeline register
+		done_processing <= nxt_done_processing; // Done with current node/ layer
+		node_out <= nxt_node_out; // Output from individual node
 	end
 
 	
 end
 
 always_comb begin
-	//if load next values is ,4 load the initial image 
+	//if load next values is, 4 load the initial image 
 	if(load_next == 4) begin
 		nxt_ANN_pipeline_register = image;
 	end
