@@ -1,24 +1,26 @@
 #!/usr/bin/env python
 
-## ----------------------- Part 1 ---------------------------- ##
+
 import numpy as np
 import os
 import time
 
 
-## ----------------------- Part 5 ---------------------------- ##
 import convert_fixed_point
 import FixedToBinary
 
 fileType = "8x8"
+
+#class containing methods for ANN computations and parameters for the size of the network
 class Neural_Network(object):
     def __init__(self):
-        #Define Hyperparameters
+        #Define Hyperparameters - layer sizes
         self.inputLayerSize = 64
         self.hiddenLayer1Size = 16
         self.hiddenLayer2Size = 8
         self.outputLayerSize = 10
 
+        #if there are weights already trained, load them from the file
         layerSize, w1, w2, w3 = LoadWeightFromFile()
         if (layerSize == None or layerSize[1] != self.hiddenLayer1Size or layerSize[2] != self.hiddenLayer2Size or layerSize[3] != self.outputLayerSize):
             #Weights (parameters)
@@ -30,84 +32,50 @@ class Neural_Network(object):
             self.W2 = w2
             self.W3 = w3
 
+    #forward propagation, calculates the output of the ANN
     def forward(self, X):
         self.x = X
         #Propogate inputs though network
-        # print("X shape = " + str(X.shape))
-        # print("W1 shape = " + str(self.W1.shape))
         self.z2 = np.dot(X, self.W1)
-        # print("z2 shape = " + str(self.z2.shape))
         self.a2 = self.sigmoid(self.z2)
-        # print("a2 shape = " + str(self.a2.shape))
         self.z3 = np.dot(self.a2, self.W2)
-        # print("z3 shape = " + str(self.z3.shape))
         self.a3 = self.sigmoid(self.z3)
-        # print("a3 shape = " + str(self.a3.shape))
         self.z4 = np.dot(self.a3, self.W3)
-        # print("z4 shape = " + str(self.z4.shape))
         self.yHat = self.sigmoid(self.z4)
-        # print("yHat shape = " + str(yHat.shape))
         return self.yHat
 
+    #same as forward just returning all layer outputs
     def forwardReturnAll(self, X):
         #Propogate inputs though network
-        # print("X shape = " + str(X.shape))
-        # print("W1 shape = " + str(self.W1.shape))
         self.z2 = np.dot(X, self.W1)
-        # print("z2 shape = " + str(self.z2.shape))
         self.a2 = self.sigmoid(self.z2)
-        # print("a2 shape = " + str(self.a2.shape))
         self.z3 = np.dot(self.a2, self.W2)
-        # print("z3 shape = " + str(self.z3.shape))
         self.a3 = self.sigmoid(self.z3)
-        # print("a3 shape = " + str(self.a3.shape))
         self.z4 = np.dot(self.a3, self.W3)
-        # print("z4 shape = " + str(self.z4.shape))
         yHat = self.sigmoid(self.z4)
-        # print("yHat shape = " + str(yHat.shape))
         return self.a2, self.a3, yHat
 
+    #sigmoid activation function
     def sigmoid(self, z):
-        #Apply sigmoid activation function to scalar, vector, or matrix
         return 1/(1+np.exp(-z))
 
-        # x_size, y_size = z.shape
-        # for x in range(0, x_size):
-        #     for y in range(0, y_size):
-        #         if (z[x][y] < 0):
-        #             z[x][y] = 0
-        #         else:
-        #             z[x][y] = z[x][y]
-        # return z
-
+    #derivative of sigmoid
     def sigmoidPrime(self,z):
         #Gradient of sigmoid
         return np.exp(-z)/((1+np.exp(-z))**2)
 
-        # x_size, y_size = z.shape
-        # for x in range(0, x_size):
-        #     for y in range(0, y_size):
-        #         if (z[x][y] >= 0):
-        #             z[x][y] = 1
-        #         else:
-        #             z[x][y] = 0
-        # return z
-
+    #Error function to minimize
     def costFunction(self, X, y):
         #Compute cost for given X,y, use weights already stored in class.
         self.yHat = self.forward(X)
-        #print("y.shape = " + str(y.shape))
-        #print("yhat.shape = " + str(self.yHat.shape))
         temp = y - self.yHat
         J = 0.5*sum(temp**2)
         return J
 
+    #derivative of cost function
     def costFunctionPrime(self, X, y):
-        #Compute derivative with respect to W and W2 for a given X and y:
+        #Compute derivative with respect to W, W2 and W3 for a given X and y:
         self.yHat = self.forward(X)
-        # print("yhat.shape = " + str(self.yHat.shape))
-        # print("z4.shape = " + str(self.z4.shape))
-        # print("a3.T.shape = " + str(self.a3.T.shape))
 
         delta4 = np.multiply(-(y-self.yHat), self.sigmoidPrime(self.z4))
         dJdW3 = np.dot(self.a3.T, delta4)
@@ -126,6 +94,7 @@ class Neural_Network(object):
         params = np.concatenate((self.W1.ravel(), self.W2.ravel(), self.W3.ravel()))
         return params
 
+    #Sets the weights from a single array
     def setParams(self, params):
         #Set W1 and W2 using single paramater vector.
         W1_start = 0
@@ -136,57 +105,31 @@ class Neural_Network(object):
         W3_end = W2_end + self.hiddenLayer2Size*self.outputLayerSize
         self.W3 = np.reshape(params[W2_end:W3_end], (self.hiddenLayer2Size, self.outputLayerSize))
 
+    #Returns the rate of change of each weight as single array
     def computeGradients(self, X, y):
         dJdW1, dJdW2, dJdW3 = self.costFunctionPrime(X, y)
         return np.concatenate((dJdW1.ravel(), dJdW2.ravel(), dJdW3.ravel()))
 
+    #saves the weights to a file helper function
     def SaveWeights(self):
         SaveWeightsToFile([self.W1, self.W2, self.W3], [self.inputLayerSize, self.hiddenLayer1Size, self.hiddenLayer2Size, self.outputLayerSize])
 
-def computeNumericalGradient(N, X, y):
-        paramsInitial = N.getParams()
-        numgrad = np.zeros(paramsInitial.shape)
-        perturb = np.zeros(paramsInitial.shape)
-        e = 1e-4
 
-        for p in range(len(paramsInitial)):
-            #Set perturbation vector
-            perturb[p] = e
-            N.setParams(paramsInitial + perturb)
-            loss2 = N.costFunction(X, y)
-
-            N.setParams(paramsInitial - perturb)
-            loss1 = N.costFunction(X, y)
-
-            #Compute Numerical Gradient
-            numgrad[p] = (loss2 - loss1) / (2*e)
-
-            #Return the value we changed to zero:
-            perturb[p] = 0
-
-        #Return Params to original value:
-        N.setParams(paramsInitial)
-        return numgrad
-
-## ----------------------- Part 6 ---------------------------- ##
-# from scipy import optimize
-
+#Class that trains the given neural network at specific learning Rate (learning rate is how big the steps are when incrementing weights)
 class trainer(object):
     def __init__(self, N):
         #Make Local reference to network:
         self.N = N
         self.learningRate = 0.1
 
-    def callbackF(self, params):
-        self.N.setParams(params)
-        self.J.append(self.N.costFunction(self.X, self.y))
-
+    #Returns the cost and the gradients
     def costFunctionWrapper(self, params, X, y):
         self.N.setParams(params)
         cost = self.N.costFunction(X, y)
         grad = self.N.computeGradients(X,y)
         return cost, grad
 
+    #gets the cost and gradients from the input and expected output and then optimizes it by minimizing the error.
     def train(self, X, y):
         #Make an internal variable for the callback function:
         self.X = X
@@ -201,14 +144,7 @@ class trainer(object):
 
         self.myOptimize(params0, X, y)
 
-        #cost, grad = self.costFunctionWrapper(params0, X, y)
-        #_res = optimize.minimize(self.costFunctionWrapper, params0, jac=True, method='BFGS', \
-        #                         args=(X, y), options=options, callback=self.callbackF)
-
-        #self.N.setParams(_res.x)
-        #self.optimizationResults = _res
-
-
+    #minimizes error the weights introduce as much as possible
     def myOptimize(self, params0, X, y):
         cost, grad = self.costFunctionWrapper(params0, X, y)
         while (np.any(np.greater(cost, 0.2))):
@@ -216,6 +152,7 @@ class trainer(object):
             self.N.setParams(params0)
             cost, grad = self.costFunctionWrapper(params0, X, y)
 
+#save the weights to a file so training does not need to be redone every time the program is used
 def SaveWeightsToFile(list_weights, layerSizes):
     dir_path = os.path.dirname(os.path.realpath(__file__))
     # print(dir_path)
@@ -229,6 +166,7 @@ def SaveWeightsToFile(list_weights, layerSizes):
                 fp.write(temp + "\n")
     fp.close()
 
+#Loads the weights from the weights file assuming training has already been performed
 def LoadWeightFromFile():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     dir_path = dir_path + "/shapeWeights" + fileType + ".txt"
@@ -259,7 +197,6 @@ def LoadWeightFromFile():
             k = k + 1
         W1.append(temp)
     W1 = np.asarray(W1)
-    # print(W1.shape)
 
     W2 = []
     for i in range(0, layerSize[1]):
@@ -269,7 +206,6 @@ def LoadWeightFromFile():
             k = k + 1
         W2.append(temp)
     W2 = np.asarray(W2)
-    # print(W2.shape)
 
     W3 = []
     for i in range(0, layerSize[2]):
@@ -279,12 +215,10 @@ def LoadWeightFromFile():
             k = k + 1
         W3.append(temp)
     W3 = np.asarray(W3)
-    # print(W3.shape)
 
     return layerSize, W1, W2, W3
 
-
-
+#Writes the output from each layer to a file in fixed_point format
 def WriteArrayToFile(array, filename):
     dir_path = os.path.dirname(os.path.realpath(__file__))
     path = dir_path + "/testcases" + fileType + "/" + filename
@@ -306,7 +240,7 @@ if __name__ == '__main__':
 
     start = time.time()
     lineCount = 0
-    while lineCount < 540000:
+    while lineCount < 540000:   #540000 is the number of lines in the file, will break out of loop if not training
 
 
         dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -320,7 +254,7 @@ if __name__ == '__main__':
 
 
         k = 1
-        current_tri = []
+        current_tri = []                #format array correctly after reading in the array line by line
         for line in lines2:
             lineCount = lineCount + 1
             if (k % (size + 1) != 0):
@@ -356,15 +290,14 @@ if __name__ == '__main__':
         t.train(arr, np.asarray(y_final))
     print("after training:")
     out = nn.forward(arr)
-    #print(nn.W3)
-    #print(out)
-    for i in range(0, 10):
+    for i in range(1, 10):
         print("i = " + str(i) + ":")
         print(out[i])
 
     end = time.time()
     print("time = " + str(end - start))
     nn.SaveWeights()
+
 
     #testcase file generation
     k = 0
@@ -386,4 +319,5 @@ if __name__ == '__main__':
     for array in nn.yHat:
         WriteArrayToFile(array,"t" + str(k) + "layOut.txt" )
         k = k + 1
+
 
