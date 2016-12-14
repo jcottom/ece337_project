@@ -24,8 +24,6 @@ module fixed_point_mult
 
 */
 
-
-
 reg sign_bit;
 reg [29:0] temp;
 
