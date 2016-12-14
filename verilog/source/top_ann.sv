@@ -4,7 +4,7 @@
 // Author:      Cheyenne Martinez
 // Lab Section: 337-03
 // Version:     1.0  Initial Design Entry
-// Description: Top level diagram
+// Description: Top level ANN to be used on the fpga
 
 module top_ann
 (

@@ -1,20 +1,21 @@
 // $Id: $
-// File name:   tb_input_node_timer.sv
+// File name:   tb_ANN.sv
 // Created:     11/8/2016
 // Author:      Ryan McBee, Taylor Lipson, and Cheyenne Martinez
 // Lab Section: 337-03
 // Version:     1.0  Initial Design Entry
-// Description: input node timer test bench
+// Description: test bench for the ANN, no SRAM implementation included
 
 `timescale 1ns / 100ps
 
 module tb_ANN
-();		
-	parameter  IMAGE_FILE   = "../python/testcases8x8/t4in_fixbin.txt";
-	parameter  COEF_FILE    = "../python/shapeWeights8x8_bin.txt";	
+();	
+	//variable declarations
+		
+	parameter  IMAGE_FILE   = "../python/testcases8x8/t4in_fixbin.txt";  //image file
+	parameter  COEF_FILE    = "../python/shapeWeights8x8_bin.txt";	     //coeficients file
 	int image_file;
 	int coef_file;
-	reg [7:0] temp;
 
 	parameter IMAGE_SIZE = 64;
 
@@ -26,16 +27,14 @@ module tb_ANN
 	reg tb_image_weights_loaded;
 	reg [IMAGE_SIZE - 1:0][15:0] tb_image;
 	reg [15:0][IMAGE_SIZE - 1:0][15:0] tb_weights;
-
-
-
 	reg tb_done_processing;
 	reg tb_request_coef;
 	reg tb_start_detecting;
 	reg [1:0] tb_coef_select;
 	reg [7:0] tb_seven_seg;
 	reg [IMAGE_SIZE - 1:0][15:0] tb_ANN_pipeline_register;
-
+	
+	//ANN device under test
 	ANN  dut(.clk(tb_clk),.n_rst(tb_n_rst),.image_weights_loaded(tb_image_weights_loaded),.image(tb_image),.weights(tb_weights),.done_processing(tb_done_processing),
 		.request_coef(tb_request_coef),.coef_select(tb_coef_select),.seven_seg(tb_seven_seg), .ANN_pipeline_register(tb_ANN_pipeline_register), .start_detecting(tb_start_detecting));
 	
@@ -48,6 +47,7 @@ module tb_ANN
 		#(CLK_PERIOD / 2.0);
 	end
 	
+	//resets the ANN
 	task reset;
 	begin
 		//test reset
@@ -57,6 +57,7 @@ module tb_ANN
 	end
 	endtask
 
+	//sends the asszerted signal to the ANN
 	task loaded;
 	begin
 		tb_image_weights_loaded = 1;
@@ -66,6 +67,7 @@ module tb_ANN
 	end
 	endtask
 
+	//waits until requrest coef is asserted
 	task wait_coef_request;
 	begin
 		while(tb_request_coef == 0) begin
@@ -175,12 +177,14 @@ module tb_ANN
 
 		loaded();  //toggle the loaded flag
 		
-		
+	//loop through each layer	
 	for(int j = 0; j < 4; j++) begin
 		
 		@(negedge tb_clk);
 
 		$error("j = %d", j);
+
+		//decide which layer to load
 		if(j == 1) begin
 			load_coef_first();
 		end

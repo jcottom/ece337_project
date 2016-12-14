@@ -10,9 +10,11 @@
 
 
 module tb_node ();
-
+	
+	//test bench variable
 	localparam PERIOD = 10.0ns;
 	localparam DELAY = 5.0ns;
+
 
 	reg tb_clk;
 	reg tb_n_rst;

@@ -4,8 +4,7 @@
 // Author:      Taylor Lipson
 // Lab Section: 337-03
 // Version:     1.0  Initial Design Entry
-// Description: test bench top.
-
+// Description: test bench for ANN implementation with SRAM, only works on fpga
 
 
 `timescale 1ns / 100ps

@@ -1,5 +1,5 @@
 // $Id: $
-// File name:   fixed_point_mult.sv
+// File name:   tb_ann_controller.sv
 // Created:     11/8/2016
 // Author:      Ryan McBee
 // Lab Section: 337-03
@@ -81,7 +81,6 @@ module tb_ann_controller
 		tb_image_weights_loaded = 1; @(posedge tb_clk); //simulate the SRAM finishing loading an image by pulsing image loaded flag
 		tb_image_weights_loaded = 0; 
 	
-
 
 		while(tb_done_processing == 0) begin
 

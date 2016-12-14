@@ -1,5 +1,5 @@
 // $Id: $
-// File name:   fixed_point_mult.sv
+// File name:   fixed_point_add.sv
 // Created:     11/8/2016
 // Author:      Ryan McBee
 // Lab Section: 337-03
@@ -37,12 +37,5 @@ module tb_fixed_point_add
 		end			
 		$display("Done!");
 	end
-
-	/*if(tb_result[31] == 1) begin
-		$display("-%d", tb_result[30:0]);
-	end
-	else begin
-		$display("%d", tb_result[30:0]);
-	end*/
 
 endmodule
