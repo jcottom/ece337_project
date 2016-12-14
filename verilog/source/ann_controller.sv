@@ -13,11 +13,11 @@
 
 module ann_controller
 #(
-	parameter FIRST_LAYER = 16,
-	parameter SECOND_LAYER = 8,
-	parameter THIRD_LAYER = 10,
+	parameter FIRST_LAYER = 16,     // Narrowed down from 64 bits
+	parameter SECOND_LAYER = 8,     // Norrowed down from 16 bits
+	parameter THIRD_LAYER = 10,     // Number 0 - 9 with number closest to 1 being final number output
 
-	parameter IMAGE_SIZE = 64		
+	parameter IMAGE_SIZE = 64	// 8x8 pixel grayscae image 	
 )
 (
 	input wire clk,
@@ -56,12 +56,12 @@ assign coef_select = coef_select_temp;
 
 always_ff @ (posedge clk, negedge n_rst)
 begin
-	//reset	
+	//reset	variables if n_rst is enabled
 	if(n_rst == 1'b0) begin
 		state <= IDLE;
 		cur_layer <= 0;
 	end
-	//Assign next state to current and increment layer
+	//Assign next state to current and increment layer if current layer is done
 	else begin
 		state <= nxt_state;
 		cur_layer <= nxt_layer;
@@ -70,9 +70,9 @@ end
 
 always_comb begin
 	
-	nxt_state = state; //preset the next state to be the current state
+	nxt_state = state; //preset the next state to be the current state to avoid latches
 	case(state)
-		IDLE : begin //Wait until start detect is enabled 
+		IDLE : begin // Wait until start detect is enabled 
 			if(start_detecting == 1'b1)
 				nxt_state = REQUEST_IMAGE;		
 		end
@@ -144,57 +144,57 @@ always_comb begin
 			coef_select_temp = 2'b11;
 		end	
 		REQUEST_IMAGE: begin
-			request_coef = 1;
+			request_coef = 1; //Request coef from SRAM
 			coef_select_temp = 2'b11;
 		end
-		WAIT_IMAGE: begin
+		WAIT_IMAGE: begin  
 			request_coef = 0;
 		end
 		LOAD_IMAGE: begin
 			request_coef = 0;
-			load_next = 4;	
+			load_next = 4;
 			
-			//wait for image to load
+			// Wait for image to load
 			coeff_ready = 0;
 		end
 		REQUEST_COEF: begin
-			request_coef = 1;
-			coeff_ready = 0;	
+			request_coef = 1; // Request coef from SRAM
+			coeff_ready = 0; // Ready to read coefficients	
 
 			// Synchronize layers for ANN and SRAM top modules
 			if (cur_layer == 2'b00) begin
-				coef_select_temp = 2'b00;
+				coef_select_temp = 2'b00; // Choose first layer of coefficients 
 			end 
 			if (cur_layer == 2'b01) begin
-				coef_select_temp = 2'b01;
+				coef_select_temp = 2'b01; // Choose second layer of coefficients
 			end
 			else if (cur_layer == 2'b10) begin
-				coef_select_temp = 2'b10;
+				coef_select_temp = 2'b10; // Choose third layer of coefficients
 			end
 		end
 		WAIT_COEF: begin
-			coeff_ready = 0;
+			coeff_ready = 0; 
 		end
 		PAUSE_COEF: begin
 			coeff_ready = 0;
 		end
 		START_LAYER: begin
-			reset_accum = 1;
+			reset_accum = 1; // Reset accumulator for next layer
 			coeff_ready = 0;	
 		end
 		WAIT_LAYER: begin
 			
 		end
 		INCR_LAYER: begin
-			load_next = cur_layer + 1; //tell the control register to load the output of the nodes			
-			nxt_layer = cur_layer + 1;
-			coeff_ready = 0;
+			load_next = cur_layer + 1; // Tell the control register to load the output of the nodes			
+			nxt_layer = cur_layer + 1; // Move to next layer
+			coeff_ready = 0; 
 		end	
 		CHECK_DONE: begin
 			coeff_ready = 0;
 		end
 		DISPLAY_OUT: begin
-			done_processing = 1;			
+			done_processing = 1; // ANN done computing and final value is ready		
 			coeff_ready = 0;
 			nxt_layer = 0;
 		end
